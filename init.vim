@@ -51,11 +51,12 @@ Plug 'machakann/vim-highlightedyank'
 Plug 'morhetz/gruvbox'
 Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python'
-Plug 'anott03/nvim-lspinstall'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate'}
 Plug 'voldikss/vim-floaterm'
 Plug 'github/copilot.vim'
+Plug 'dart-lang/dart-vim-plugin'
+Plug 'nvim-lua/plenary.nvim'
 "Plug 'rcarriga/nvim-dap-ui'
 call plug#end()
 " You can revert the settings after the call like so:
@@ -98,7 +99,7 @@ lspconfig.rust_analyzer.setup {
     ['rust-analyzer'] = {},
   },
 }
-
+lspconfig.dartls.setup {}
 
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
