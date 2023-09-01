@@ -89,6 +89,8 @@ lua require('dap-python').setup('/Users/tsutton/opt/anaconda3/envs/3.11/bin/pyth
 
 lua << EOF
 -- Setup language servers.
+local dapvscode = require('dap.ext.vscode')
+dapvscode.load_launchjs()
 
 local lspconfig = require('lspconfig')
 lspconfig.pyright.setup {}
