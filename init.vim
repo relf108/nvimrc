@@ -1,4 +1,5 @@
 set relativenumber
+set smartindent
 call plug#begin()
 "" The default plugin directory will be as follows:
 "   - Vim (Linux/macOS): '~/.vim/plugged'
@@ -57,6 +58,7 @@ Plug 'voldikss/vim-floaterm'
 Plug 'github/copilot.vim'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'nvim-lua/plenary.nvim'
+Plug 'akinsho/flutter-tools.nvim'
 "Plug 'rcarriga/nvim-dap-ui'
 call plug#end()
 " You can revert the settings after the call like so:
@@ -86,8 +88,47 @@ let g:neomake_python_enabled_makers = ['pylint']
 call neomake#configure#automake('nrwi', 500)
 colorscheme gruvbox
 lua require('dap-python').setup('/Users/tsutton/opt/anaconda3/envs/3.11/bin/python')
-
 lua << EOF
+require("flutter-tools").setup {}
+  local dap = require('dap')
+
+  dap.adapters.dart = {
+    type = "executable",
+    command = "dart",
+    -- This command was introduced upstream in https://github.com/dart-lang/sdk/commit/b68ccc9a
+    args = {"debug_adapter"}
+  }
+  dap.configurations.dart = {
+    {
+      type = "dart",
+      request = "launch",
+      name = "Launch Dart Program",
+      -- The nvim-dap plugin populates this variable with the filename of the current buffer
+      program = "${file}",
+      -- The nvim-dap plugin populates this variable with the editor's current working directory
+      cwd = "${workspaceFolder}",
+      args = {"--help"}, -- Note for Dart apps this is args, for Flutter apps toolArgs
+    }
+  }
+  dap.adapters.dart = {
+    type = "executable",
+    -- As of this writing, this functionality is open for review in https://github.com/flutter/flutter/pull/91802
+    command = "flutter",
+    args = {"debug_adapter"}
+  }
+  dap.configurations.dart = {
+    {
+      type = "dart",
+      request = "launch",
+      name = "Launch Flutter Program",
+      -- The nvim-dap plugin populates this variable with the filename of the current buffer
+      program = "${file}",
+      -- The nvim-dap plugin populates this variable with the editor's current working directory
+      cwd = "${workspaceFolder}",
+      -- This gets forwarded to the Flutter CLI tool, substitute `linux` for whatever device you wish to launch
+      toolArgs = {"-d", "macOS"}
+    }
+  }
 -- Setup language servers.
 local dapvscode = require('dap.ext.vscode')
 dapvscode.load_launchjs()
