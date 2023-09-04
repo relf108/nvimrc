@@ -15,7 +15,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'jiangmiao/auto-pairs'
 Plug 'neomake/neomake'
 Plug 'machakann/vim-highlightedyank'
-Plug 'morhetz/gruvbox'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python'
 Plug 'neovim/nvim-lspconfig'
@@ -36,7 +36,7 @@ let g:neomake_python_enabled_makers = ['pylint']
 
 call neomake#configure#automake('nrwi', 500)
 
-colorscheme gruvbox
+colorscheme catppuccin-mocha
 
 lua require('dap-python').setup('/Users/tsutton/opt/anaconda3/envs/3.11/bin/python')
 
@@ -207,14 +207,5 @@ require'nvim-web-devicons'.setup {
     name = "Log"
   }
  };
-}
-
-require'trouble'.setup{
-  signs = {
-    error = "error",
-    warning = "warn",
-    hint = "hint",
-    information = "info"
-};
 }
 EOF
