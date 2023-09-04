@@ -1,13 +1,14 @@
 set relativenumber
+set autowriteall
 set smartindent
 set expandtab
 set shiftwidth=2
 set tabstop=2
 
-autocmd BufWritePre * :%s/\s\+$//e
-autocmd TextChanged * update
-autocmd InsertLeave * update
- 
+autocmd BufWritePre .* :%s/\s\+$//e
+autocmd TextChanged .* update
+autocmd InsertLeave .* update
+
 call plug#begin()
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'vim-airline/vim-airline'
@@ -25,6 +26,8 @@ Plug 'dart-lang/dart-vim-plugin'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.x' }
 Plug 'numToStr/Comment.nvim'
+Plug 'folke/trouble.nvim'
+Plug 'nvim-tree/nvim-web-devicons'
 call plug#end()
 
 let g:deoplete#enable_at_startup = 1
@@ -38,38 +41,38 @@ colorscheme gruvbox
 lua require('dap-python').setup('/Users/tsutton/opt/anaconda3/envs/3.11/bin/python')
 
 lua << EOF
-  local dap = require('dap')
+local dap = require('dap')
 
-  dap.adapters.dart = {
-    type = "executable",
-    command = "dart",
-    args = {"debug_adapter"}
+dap.adapters.dart = {
+  type = "executable",
+  command = "dart",
+  args = {"debug_adapter"}
+}
+dap.configurations.dart = {
+  {
+    type = "dart",
+    request = "launch",
+    name = "Launch Dart Program",
+    program = "${file}",
+    cwd = "${workspaceFolder}",
+    args = {"--help"},
   }
-  dap.configurations.dart = {
-    {
-      type = "dart",
-      request = "launch",
-      name = "Launch Dart Program",
-      program = "${file}",
-      cwd = "${workspaceFolder}",
-      args = {"--help"},
-    }
+}
+dap.adapters.dart = {
+  type = "executable",
+  command = "flutter",
+  args = {"debug_adapter"}
+}
+dap.configurations.dart = {
+  {
+    type = "dart",
+    request = "launch",
+    name = "Launch Flutter Program",
+    program = "${file}",
+    cwd = "${workspaceFolder}",
+  --   toolArgs = {"-d", "ios"}
   }
-  dap.adapters.dart = {
-    type = "executable",
-    command = "flutter",
-    args = {"debug_adapter"}
-  }
-  dap.configurations.dart = {
-    {
-      type = "dart",
-      request = "launch",
-      name = "Launch Flutter Program",
-      program = "${file}",
-      cwd = "${workspaceFolder}",
-      toolArgs = {"-d", "macOS"}
-    }
-  }
+}
 
 local dapvscode = require('dap.ext.vscode')
 dapvscode.load_launchjs()
@@ -158,6 +161,13 @@ local widgets = require('dap.ui.widgets')
 widgets.centered_float(widgets.scopes)
 end)
 
+vim.keymap.set("n", "<leader>xx", function() require("trouble").open() end)
+vim.keymap.set("n", "<leader>xw", function() require("trouble").open("workspace_diagnostics") end)
+vim.keymap.set("n", "<leader>xd", function() require("trouble").open("document_diagnostics") end)
+vim.keymap.set("n", "<leader>xq", function() require("trouble").open("quickfix") end)
+vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") end)
+vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end)
+
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript" },
   sync_install = false,
@@ -171,4 +181,40 @@ require'nvim-treesitter.configs'.setup {
   }
 }
 require('Comment').setup()
+require'nvim-web-devicons'.setup {
+ override = {
+  zsh = {
+    icon = "",
+    color = "#428850",
+    cterm_color = "65",
+    name = "Zsh"
+  }
+ };
+ color_icons = true;
+ default = true;
+ strict = true;
+ override_by_filename = {
+  [".gitignore"] = {
+    icon = "",
+    color = "#f1502f",
+    name = "Gitignore"
+  }
+ };
+ override_by_extension = {
+  ["log"] = {
+    icon = "",
+    color = "#81e043",
+    name = "Log"
+  }
+ };
+}
+
+require'trouble'.setup{
+  signs = {
+    error = "error",
+    warning = "warn",
+    hint = "hint",
+    information = "info"
+};
+}
 EOF
