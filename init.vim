@@ -4,6 +4,7 @@ set smartindent
 set expandtab
 set shiftwidth=2
 set tabstop=2
+set clipboard+=unnamedplus
 
 autocmd BufWritePre .* :%s/\s\+$//e
 autocmd TextChanged .* update
@@ -30,6 +31,9 @@ Plug 'folke/trouble.nvim'
 Plug 'nvim-tree/nvim-web-devicons'
 call plug#end()
 
+
+lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
+
 let g:deoplete#enable_at_startup = 1
 
 let g:neomake_python_enabled_makers = ['pylint']
@@ -38,7 +42,6 @@ call neomake#configure#automake('nrwi', 500)
 
 colorscheme catppuccin-mocha
 
-lua require('dap-python').setup('/Users/tsutton/opt/anaconda3/envs/3.11/bin/python')
 
 lua << EOF
 local dap = require('dap')
@@ -82,8 +85,8 @@ lspconfig.pyright.setup {}
 lspconfig.tsserver.setup {}
 lspconfig.rust_analyzer.setup {
   settings = {
-    ['rust-analyzer'] = {},
-  },
+    ['rust-analyzer'] = {}
+  }
 }
 
 lspconfig.dartls.setup {
@@ -98,7 +101,9 @@ lspconfig.dartls.setup {
   root_dir = lspconfig.util.root_pattern('pubspec.yaml', '.git'),
 }
 
+vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
 vim.g.mapleader = " "
+
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
