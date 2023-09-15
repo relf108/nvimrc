@@ -29,6 +29,9 @@ Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.x' }
 Plug 'numToStr/Comment.nvim'
 Plug 'folke/trouble.nvim'
 Plug 'nvim-tree/nvim-web-devicons'
+Plug 'antoinemadec/FixCursorHold.nvim'
+Plug 'nvim-neotest/neotest'
+Plug 'nvim-neotest/neotest-python'
 call plug#end()
 
 
@@ -173,6 +176,8 @@ vim.keymap.set("n", "<leader>xq", function() require("trouble").open("quickfix")
 vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") end)
 vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end)
 
+vim.keymap.set("n", "<leader>tf", function() require("neotest").run.run({vim.fn.expand("%"), strategy = "dap"}) end)
+
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript" },
   sync_install = false,
@@ -213,4 +218,9 @@ require'nvim-web-devicons'.setup {
   }
  };
 }
+require("neotest").setup({
+  adapters = {
+    require("neotest-python")
+  }
+})
 EOF
