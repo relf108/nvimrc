@@ -34,7 +34,6 @@ Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-python'
 call plug#end()
 
-
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
 
 let g:deoplete#enable_at_startup = 1
@@ -45,10 +44,38 @@ call neomake#configure#automake('nrwi', 500)
 
 colorscheme catppuccin-mocha
 
-
 lua << EOF
-local dap = require('dap')
 
+vim.g.host = ""
+vim.g.host_ro = ""
+vim.g.user = ""
+vim.g.password = ""
+
+function PytestArgs()
+   if vim.g.host ~= "" and vim.g.host_ro ~= "" and vim.g.user ~= "" and vim.g.password ~= "" and vim.fn.input("Use last values? (y/n): ") == "y" then
+       return {
+           DB_HOST=vim.g.host,
+           DB_HOST_RO=vim.g.host_ro,
+           DB_USER=vim.g.user,
+           DB_PASSWORD=vim.g.password,
+           DEBUG="True"
+       }
+   end
+    vim.g.host=vim.fn.input("DB_HOST: ")
+    vim.g.host_ro=vim.fn.input("DB_HOST_RO: ")
+    vim.g.user=vim.fn.input("DB_USER: ")
+    vim.g.password=vim.fn.input("DB_PASSWORD: ")
+    return {
+         DB_HOST=vim.g.host,
+         DB_HOST_RO=vim.g.host_ro,
+         DB_USER=vim.g.user,
+         DB_PASSWORD=vim.g.password,
+         DEBUG="True"
+     }
+end
+
+local dap = require('dap')
+ 
 dap.adapters.dart = {
   type = "executable",
   command = "dart",
@@ -176,7 +203,7 @@ vim.keymap.set("n", "<leader>xq", function() require("trouble").open("quickfix")
 vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") end)
 vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end)
 
-vim.keymap.set("n", "<leader>tf", function() require("neotest").run.run({vim.fn.expand("%"), strategy = "dap"}) end)
+vim.keymap.set("n", "<leader>tf", function() require("neotest").run.run({vim.fn.expand("%"), strategy = "dap", env = PytestArgs()}) end)
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript" },
