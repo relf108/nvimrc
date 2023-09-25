@@ -32,6 +32,7 @@ Plug 'nvim-tree/nvim-web-devicons'
 Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-python'
+Plug 'preservim/nerdtree'
 call plug#end()
 
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
