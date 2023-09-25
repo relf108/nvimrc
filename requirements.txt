@@ -1,0 +1,4 @@
+neovim >= latest
+pyright >= latest
+debugpy >= latest
+pylint >= latest
