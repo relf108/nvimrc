@@ -33,9 +33,11 @@ Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-python'
 Plug 'preservim/nerdtree'
+Plug 'akinsho/git-conflict.nvim'
 call plug#end()
 
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
+lua require('git-conflict').setup()
 
 let g:deoplete#enable_at_startup = 1
 
