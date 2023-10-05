@@ -44,6 +44,8 @@ let g:deoplete#enable_at_startup = 1
 
 let g:neomake_python_enabled_makers = ['pylint']
 
+let g:floaterm_keymap_toggle = 'tt'
+
 call neomake#configure#automake('nrwi', 500)
 
 colorscheme catppuccin-mocha
@@ -56,12 +58,14 @@ vim.g.user = ""
 vim.g.password = ""
 
 function PytestArgs()
-   if vim.g.host ~= "" and vim.g.host_ro ~= "" and vim.g.user ~= "" and vim.g.password ~= "" and vim.fn.input("Use last values? (y/n): ") == "y" then
+   if vim.g.host ~= "" and vim.g.host_ro ~= "" and vim.g.user ~= "" and vim.g.password ~= "" and vim.g.weatherzone_user_id ~= "" and vim.g.weatherzone_password ~= "" and vim.fn.input("Use last values? (y/n): ") == "y" then
        return {
            DB_HOST=vim.g.host,
            DB_HOST_RO=vim.g.host_ro,
            DB_USER=vim.g.user,
            DB_PASSWORD=vim.g.password,
+           WEATHERZONE_USER_ID=vim.g.weatherzone_user_id,
+           WEATHERZONE_PASSWORD=vim.g.weatherzone_password,
            DEBUG="True"
        }
    end
@@ -69,11 +73,15 @@ function PytestArgs()
     vim.g.host_ro=vim.fn.input("DB_HOST_RO: ")
     vim.g.user=vim.fn.input("DB_USER: ")
     vim.g.password=vim.fn.input("DB_PASSWORD: ")
+    vim.g.weatherzone_user_id=vim.fn.input("WEATHERZONE_USER_ID: ")
+    vim.g.weatherzone_password=vim.fn.input("WEATHERZONE_PASSWORD: ")
     return {
          DB_HOST=vim.g.host,
          DB_HOST_RO=vim.g.host_ro,
          DB_USER=vim.g.user,
          DB_PASSWORD=vim.g.password,
+         WEATHERZONE_USER_ID=vim.g.weatherzone_user_id,
+         WEATHERZONE_PASSWORD=vim.g.weatherzone_password,
          DEBUG="True"
      }
 end
