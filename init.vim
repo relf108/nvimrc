@@ -44,7 +44,7 @@ let g:deoplete#enable_at_startup = 1
 
 let g:neomake_python_enabled_makers = ['pylint']
 
-let g:floaterm_keymap_toggle = 'tt'
+let g:floaterm_keymap_toggle = '<C-t>'
 
 call neomake#configure#automake('nrwi', 500)
 
@@ -66,6 +66,8 @@ function PytestArgs()
            DB_PASSWORD=vim.g.password,
            WEATHERZONE_USER_ID=vim.g.weatherzone_user_id,
            WEATHERZONE_PASSWORD=vim.g.weatherzone_password,
+           AWS_CONFIG_FILE="/Users/tsutton/.aws/mfa",
+           AWS_PROFILE="mfa",
            DEBUG="True"
        }
    end
@@ -82,6 +84,8 @@ function PytestArgs()
          DB_PASSWORD=vim.g.password,
          WEATHERZONE_USER_ID=vim.g.weatherzone_user_id,
          WEATHERZONE_PASSWORD=vim.g.weatherzone_password,
+         AWS_CONFIG_FILE="/Users/tsutton/.aws/mfa",
+         AWS_PROFILE="mfa",
          DEBUG="True"
      }
 end
@@ -188,6 +192,7 @@ vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
 vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
 vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
 vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
+vim.keymap.set('n', '<F9>', function() require('dap').terminate() end)
 vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
 vim.keymap.set('n', '<Leader>B', function() require('dap').set_breakpoint() end)
 vim.keymap.set('n', '<Leader>lp', function() require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
