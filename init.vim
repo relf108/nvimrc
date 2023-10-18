@@ -52,205 +52,344 @@ colorscheme catppuccin-mocha
 
 lua << EOF
 
-vim.g.host = ""
-vim.g.host_ro = ""
-vim.g.user = ""
-vim.g.password = ""
-
-local json = require('json')
+local json = require("json")
 
 function file_exists(file)
-  local f = io.open(file, "rb")
-  if f then f:close() end
-  return f ~= nil
+    local f = io.open(file, "rb")
+    if f then
+        f:close()
+    end
+    return f ~= nil
 end
 
 function PytestArgs()
-  if not file_exists(".vscode/launch.json") then return {} end
-  local file = io.open(".vscode/launch.json", "r")
-  local configs = json:decode(file:read("*all"))["configurations"]
-  for _, config in pairs(configs) do
-    if config["module"] == "pytest" then
-      return config["env"]
+    if not file_exists(".vscode/launch.json") then
+        return {}
     end
-  end
+    local file = io.open(".vscode/launch.json", "r")
+    local configs = json:decode(file:read("*all"))["configurations"]
+    for _, config in pairs(configs) do
+        if config["module"] == "pytest" then
+            return config["env"]
+        end
+    end
 end
 
-local dap = require('dap')
- 
+local dap = require("dap")
+
 dap.adapters.dart = {
-  type = "executable",
-  command = "dart",
-  args = {"debug_adapter"}
+    type = "executable",
+    command = "dart",
+    args = {"debug_adapter"}
 }
 dap.configurations.dart = {
-  {
-    type = "dart",
-    request = "launch",
-    name = "Launch Dart Program",
-    program = "${file}",
-    cwd = "${workspaceFolder}",
-    args = {"--help"},
-  }
+    {
+        type = "dart",
+        request = "launch",
+        name = "Launch Dart Program",
+        program = "${file}",
+        cwd = "${workspaceFolder}",
+        args = {"--help"}
+    }
 }
 dap.adapters.dart = {
-  type = "executable",
-  command = "flutter",
-  args = {"debug_adapter"}
+    type = "executable",
+    command = "flutter",
+    args = {"debug_adapter"}
 }
 dap.configurations.dart = {
-  {
-    type = "dart",
-    request = "launch",
-    name = "Launch Flutter Program",
-    program = "${file}",
-    cwd = "${workspaceFolder}",
-  --   toolArgs = {"-d", "ios"}
-  }
+    {
+        type = "dart",
+        request = "launch",
+        name = "Launch Flutter Program",
+        program = "${file}",
+        cwd = "${workspaceFolder}"
+        --   toolArgs = {"-d", "ios"}
+    }
 }
 
-local dapvscode = require('dap.ext.vscode')
+local dapvscode = require("dap.ext.vscode")
 dapvscode.load_launchjs()
 
-local lspconfig = require('lspconfig')
+local lspconfig = require("lspconfig")
 lspconfig.pyright.setup {}
 lspconfig.tsserver.setup {}
 lspconfig.rust_analyzer.setup {
-  settings = {
-    ['rust-analyzer'] = {}
-  }
+    settings = {
+        ["rust-analyzer"] = {}
+    }
 }
 
 lspconfig.dartls.setup {
-  filetypes = {'dart'},
-  init_options = {
-    closingLabels = true,
-    flutterOutline = true,
-    onlyAnalyzeProjectsWithOpenFiles = true,
-    outline = true,
-    suggestFromUnimportedLibraries = true,
-  },
-  root_dir = lspconfig.util.root_pattern('pubspec.yaml', '.git'),
+    filetypes = {"dart"},
+    init_options = {
+        closingLabels = true,
+        flutterOutline = true,
+        onlyAnalyzeProjectsWithOpenFiles = true,
+        outline = true,
+        suggestFromUnimportedLibraries = true
+    },
+    root_dir = lspconfig.util.root_pattern("pubspec.yaml", ".git")
 }
 
-vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
+vim.keymap.set("n", "<Space>", "<Nop>", {silent = true, remap = false})
 vim.g.mapleader = " "
 
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.api.nvim_set_keymap('n', '<Leader>fh', ':lua require"telescope.builtin".find_files({ hidden = true })<CR>', {noremap = true, silent = true})
+local builtin = require("telescope.builtin")
+vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
+vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
+vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
+vim.api.nvim_set_keymap(
+    "n",
+    "<Leader>fh",
+    ':lua require"telescope.builtin".find_files({ hidden = true })<CR>',
+    {noremap = true, silent = true}
+)
 
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
+vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist)
 
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-  callback = function(ev)
+vim.api.nvim_create_autocmd(
+    "LspAttach",
+    {
+        group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+        callback = function(ev)
+            vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 
-    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+            local opts = {buffer = ev.buf}
+            vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+            vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+            vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+            vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+            vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+            vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
+            vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts)
+            vim.keymap.set(
+                "n",
+                "<space>wl",
+                function()
+                    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+                end,
+                opts
+            )
+            vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, opts)
+            vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
+            vim.keymap.set({"n", "v"}, "<space>ca", vim.lsp.buf.code_action, opts)
+            vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+            vim.keymap.set(
+                "n",
+                "<space>f",
+                function()
+                    vim.lsp.buf.format {async = true}
+                end,
+                opts
+            )
+        end
+    }
+)
 
-    local opts = { buffer = ev.buf }
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
-    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
-    vim.keymap.set('n', '<space>wl', function()
-      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, opts)
-    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', '<space>f', function()
-      vim.lsp.buf.format { async = true }
-    end, opts)
-  end,
-})
+vim.keymap.set(
+    "n",
+    "<F5>",
+    function()
+        require("dap").continue()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<F10>",
+    function()
+        require("dap").step_over()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<F11>",
+    function()
+        require("dap").step_into()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<F12>",
+    function()
+        require("dap").step_out()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<F9>",
+    function()
+        require("dap").terminate()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<Leader>b",
+    function()
+        require("dap").toggle_breakpoint()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<Leader>B",
+    function()
+        require("dap").set_breakpoint()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<Leader>lp",
+    function()
+        require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
+    end
+)
+vim.keymap.set(
+    "n",
+    "<Leader>dr",
+    function()
+        require("dap").repl.open()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<Leader>dl",
+    function()
+        require("dap").run_last()
+    end
+)
+vim.keymap.set(
+    {"n", "v"},
+    "<Leader>dh",
+    function()
+        require("dap.ui.widgets").hover()
+    end
+)
+vim.keymap.set(
+    {"n", "v"},
+    "<Leader>dp",
+    function()
+        require("dap.ui.widgets").preview()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<Leader>df",
+    function()
+        local widgets = require("dap.ui.widgets")
+        widgets.centered_float(widgets.frames)
+    end
+)
+vim.keymap.set(
+    "n",
+    "<Leader>ds",
+    function()
+        local widgets = require("dap.ui.widgets")
+        widgets.centered_float(widgets.scopes)
+    end
+)
 
-vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
-vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
-vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
-vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
-vim.keymap.set('n', '<F9>', function() require('dap').terminate() end)
-vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
-vim.keymap.set('n', '<Leader>B', function() require('dap').set_breakpoint() end)
-vim.keymap.set('n', '<Leader>lp', function() require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
-vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
-vim.keymap.set('n', '<Leader>dl', function() require('dap').run_last() end)
-vim.keymap.set({'n', 'v'}, '<Leader>dh', function()
-require('dap.ui.widgets').hover()
-end)
-vim.keymap.set({'n', 'v'}, '<Leader>dp', function()
-require('dap.ui.widgets').preview()
-end)
-vim.keymap.set('n', '<Leader>df', function()
-local widgets = require('dap.ui.widgets')
-widgets.centered_float(widgets.frames)
-end)
-vim.keymap.set('n', '<Leader>ds', function()
-local widgets = require('dap.ui.widgets')
-widgets.centered_float(widgets.scopes)
-end)
+vim.keymap.set(
+    "n",
+    "<leader>xx",
+    function()
+        require("trouble").open()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<leader>xw",
+    function()
+        require("trouble").open("workspace_diagnostics")
+    end
+)
+vim.keymap.set(
+    "n",
+    "<leader>xd",
+    function()
+        require("trouble").open("document_diagnostics")
+    end
+)
+vim.keymap.set(
+    "n",
+    "<leader>xq",
+    function()
+        require("trouble").open("quickfix")
+    end
+)
+vim.keymap.set(
+    "n",
+    "<leader>xl",
+    function()
+        require("trouble").open("loclist")
+    end
+)
+vim.keymap.set(
+    "n",
+    "gR",
+    function()
+        require("trouble").open("lsp_references")
+    end
+)
 
-vim.keymap.set("n", "<leader>xx", function() require("trouble").open() end)
-vim.keymap.set("n", "<leader>xw", function() require("trouble").open("workspace_diagnostics") end)
-vim.keymap.set("n", "<leader>xd", function() require("trouble").open("document_diagnostics") end)
-vim.keymap.set("n", "<leader>xq", function() require("trouble").open("quickfix") end)
-vim.keymap.set("n", "<leader>xl", function() require("trouble").open("loclist") end)
-vim.keymap.set("n", "gR", function() require("trouble").open("lsp_references") end)
+vim.keymap.set(
+    "n",
+    "<leader>tf",
+    function()
+        require("neotest").run.run({vim.fn.expand("%"), strategy = "dap", env = PytestArgs()})
+    end
+)
 
-vim.keymap.set("n", "<leader>tf", function() require("neotest").run.run({vim.fn.expand("%"), strategy = "dap", env = PytestArgs()}) end)
-
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript" },
-  sync_install = false,
-  ignore_install = { "javascript" },
-  highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = true,
-  },
-  indent = {
-    enable = true
-  }
+require "nvim-treesitter.configs".setup {
+    ensure_installed = {"c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript"},
+    sync_install = false,
+    ignore_install = {"javascript"},
+    highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = true
+    },
+    indent = {
+        enable = true
+    }
 }
-require('Comment').setup()
-require'nvim-web-devicons'.setup {
- override = {
-  zsh = {
-    icon = "",
-    color = "#428850",
-    cterm_color = "65",
-    name = "Zsh"
-  }
- };
- color_icons = true;
- default = true;
- strict = true;
- override_by_filename = {
-  [".gitignore"] = {
-    icon = "",
-    color = "#f1502f",
-    name = "Gitignore"
-  }
- };
- override_by_extension = {
-  ["log"] = {
-    icon = "",
-    color = "#81e043",
-    name = "Log"
-  }
- };
+
+require("Comment").setup()
+
+require "nvim-web-devicons".setup {
+    override = {
+        zsh = {
+            icon = "",
+            color = "#428850",
+            cterm_color = "65",
+            name = "Zsh"
+        }
+    },
+    color_icons = true,
+    default = true,
+    strict = true,
+    override_by_filename = {
+        [".gitignore"] = {
+            icon = "",
+            color = "#f1502f",
+            name = "Gitignore"
+        }
+    },
+    override_by_extension = {
+        ["log"] = {
+            icon = "",
+            color = "#81e043",
+            name = "Log"
+        }
+    }
 }
-require("neotest").setup({
-  adapters = {
-    require("neotest-python")
-  }
-})
+
+require("neotest").setup(
+    {
+        adapters = {
+            require("neotest-python")
+        }
+    }
+)
 EOF
