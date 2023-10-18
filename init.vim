@@ -57,37 +57,23 @@ vim.g.host_ro = ""
 vim.g.user = ""
 vim.g.password = ""
 
+local json = require('json')
+
+function file_exists(file)
+  local f = io.open(file, "rb")
+  if f then f:close() end
+  return f ~= nil
+end
+
 function PytestArgs()
-   if vim.g.host ~= "" and vim.g.host_ro ~= "" and vim.g.user ~= "" and vim.g.password ~= "" and vim.g.weatherzone_user_id ~= "" and vim.g.weatherzone_password ~= "" and vim.fn.input("Use last values? (y/n): ") == "y" then
-       return {
-           DB_HOST=vim.g.host,
-           DB_HOST_RO=vim.g.host_ro,
-           DB_USER=vim.g.user,
-           DB_PASSWORD=vim.g.password,
-           WEATHERZONE_USER_ID=vim.g.weatherzone_user_id,
-           WEATHERZONE_PASSWORD=vim.g.weatherzone_password,
-           AWS_CONFIG_FILE="/Users/tsutton/.aws/mfa",
-           AWS_PROFILE="mfa",
-           DEBUG="True"
-       }
-   end
-    vim.g.host=vim.fn.input("DB_HOST: ")
-    vim.g.host_ro=vim.fn.input("DB_HOST_RO: ")
-    vim.g.user=vim.fn.input("DB_USER: ")
-    vim.g.password=vim.fn.input("DB_PASSWORD: ")
-    vim.g.weatherzone_user_id=vim.fn.input("WEATHERZONE_USER_ID: ")
-    vim.g.weatherzone_password=vim.fn.input("WEATHERZONE_PASSWORD: ")
-    return {
-         DB_HOST=vim.g.host,
-         DB_HOST_RO=vim.g.host_ro,
-         DB_USER=vim.g.user,
-         DB_PASSWORD=vim.g.password,
-         WEATHERZONE_USER_ID=vim.g.weatherzone_user_id,
-         WEATHERZONE_PASSWORD=vim.g.weatherzone_password,
-         AWS_CONFIG_FILE="/Users/tsutton/.aws/mfa",
-         AWS_PROFILE="mfa",
-         DEBUG="True"
-     }
+  if not file_exists(".vscode/launch.json") then return {} end
+  local file = io.open(".vscode/launch.json", "r")
+  local configs = json:decode(file:read("*all"))["configurations"]
+  for _, config in pairs(configs) do
+    if config["module"] == "pytest" then
+      return config["env"]
+    end
+  end
 end
 
 local dap = require('dap')
