@@ -62,7 +62,7 @@ function file_exists(file)
     return f ~= nil
 end
 
-function PytestArgs()
+function pytest_env()
     if not file_exists(".vscode/launch.json") then
         return {}
     end
@@ -338,7 +338,7 @@ vim.keymap.set(
     "n",
     "<leader>tf",
     function()
-        require("neotest").run.run({vim.fn.expand("%"), strategy = "dap", env = PytestArgs()})
+        require("neotest").run.run({vim.fn.expand("%"), strategy = "dap", env = pytest_env()})
     end
 )
 
