@@ -41,6 +41,7 @@ Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
+Plug 'mattboehm/vim-unstack'
 call plug#end()
 
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
