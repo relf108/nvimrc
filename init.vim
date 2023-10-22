@@ -11,7 +11,6 @@ autocmd TextChanged .* update
 autocmd InsertLeave .* update
 
 call plug#begin()
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'vim-airline/vim-airline'
 Plug 'jiangmiao/auto-pairs'
 Plug 'neomake/neomake'
@@ -35,12 +34,17 @@ Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-python'
 Plug 'preservim/nerdtree'
 Plug 'akinsho/git-conflict.nvim'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/vim-vsnip'
 call plug#end()
 
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
 lua require('git-conflict').setup()
-
-let g:deoplete#enable_at_startup = 1
 
 let g:neomake_python_enabled_makers = ['pylint']
 
@@ -111,13 +115,20 @@ dap.configurations.dart = {
 local dapvscode = require("dap.ext.vscode")
 dapvscode.load_launchjs()
 
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
 local lspconfig = require("lspconfig")
-lspconfig.pyright.setup {}
-lspconfig.tsserver.setup {}
+lspconfig.pyright.setup {
+    capabilities = capabilities
+}
+lspconfig.tsserver.setup {
+    capabilities = capabilities
+}
 lspconfig.rust_analyzer.setup {
     settings = {
         ["rust-analyzer"] = {}
-    }
+    },
+    capabilities = capabilities
 }
 
 lspconfig.dartls.setup {
@@ -129,7 +140,8 @@ lspconfig.dartls.setup {
         outline = true,
         suggestFromUnimportedLibraries = true
     },
-    root_dir = lspconfig.util.root_pattern("pubspec.yaml", ".git")
+    root_dir = lspconfig.util.root_pattern("pubspec.yaml", ".git"),
+    capabilities = capabilities
 }
 
 vim.keymap.set("n", "<Space>", "<Nop>", {silent = true, remap = false})
@@ -390,6 +402,79 @@ require("neotest").setup(
         adapters = {
             require("neotest-python")
         }
+    }
+)
+-- Set up nvim-cmp.
+local cmp = require "cmp"
+
+cmp.setup(
+    {
+        snippet = {
+            expand = function(args)
+                vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+            end
+        },
+        window = {},
+        mapping = cmp.mapping.preset.insert(
+            {
+                ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+                ["<C-f>"] = cmp.mapping.scroll_docs(4),
+                ["<C-Space>"] = cmp.mapping.complete(),
+                ["<C-e>"] = cmp.mapping.abort(),
+                ["<CR>"] = cmp.mapping.confirm({select = true}) -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+            }
+        ),
+        sources = cmp.config.sources(
+            {
+                {name = "nvim_lsp"},
+                {name = "vsnip"} -- For vsnip users.
+            },
+            {
+                {name = "buffer"}
+            }
+        )
+    }
+)
+
+-- Set configuration for specific filetype.
+cmp.setup.filetype(
+    "gitcommit",
+    {
+        sources = cmp.config.sources(
+            {
+                {name = "git"} -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
+            },
+            {
+                {name = "buffer"}
+            }
+        )
+    }
+)
+
+-- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(
+    {"/", "?"},
+    {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+            {name = "buffer"}
+        }
+    }
+)
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(
+    ":",
+    {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources(
+            {
+                {name = "path"}
+            },
+            {
+                {name = "cmdline"}
+            }
+        )
     }
 )
 EOF
