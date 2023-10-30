@@ -42,6 +42,9 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'mattboehm/vim-unstack'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'tpope/vim-dadbod'
+Plug 'kristijanhusak/vim-dadbod-ui'
 call plug#end()
 
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
@@ -81,6 +84,11 @@ function pytest_env()
 end
 
 local dap = require("dap")
+
+local dapui = require("dapui").setup()
+ dap.listeners.after.event_initialized["dapui_config"] = function()
+   require("dapui").open()
+ end
 
 dap.adapters.dart = {
     type = "executable",
@@ -145,20 +153,28 @@ lspconfig.dartls.setup {
     capabilities = capabilities
 }
 
+
 vim.keymap.set("n", "<Space>", "<Nop>", {silent = true, remap = false})
 vim.g.mapleader = " "
 
+vim.api.nvim_set_keymap("n", "<leader>du", ':lua require("dapui").toggle()<CR>', {noremap = true, silent = true})
+
 local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
+-- vim.keymap.set("n", "<leader>fg", builtin.live_grep, { hidden = true })
+-- vim.keymap.set("n", "<leader>ff", builtin.find_files, { hidden = true })
 vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
-vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
 vim.api.nvim_set_keymap(
     "n",
-    "<Leader>fh",
-    ':lua require"telescope.builtin".find_files({ hidden = true })<CR>',
+    "<Leader>ff",
+    ':lua require"telescope.builtin".find_files({ hidden = true, file_ignore_patterns = {".git"} })<CR>',
     {noremap = true, silent = true}
 )
-
+vim.api.nvim_set_keymap(
+    "n",
+    "<Leader>fg",
+    ':lua require"telescope.builtin".live_grep({ hidden = true, file_ignore_patterns = {".git"} })<CR>',
+    {noremap = true, silent = true}
+)
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
