@@ -45,7 +45,20 @@ Plug 'mattboehm/vim-unstack'
 Plug 'rcarriga/nvim-dap-ui'
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
+Plug 'kristijanhusak/vim-dadbod-completion'
 call plug#end()
+
+" DADBOD "
+autocmd FileType sql,mysql,plsql lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
+let g:completion_chain_complete_list = {
+    \   'sql': [
+    \    {'complete_items': ['vim-dadbod-completion']},
+    \   ],
+    \ }
+" Make sure `substring` is part of this list. Other items are optional for this completion source
+let g:completion_matching_strategy_list = ['exact', 'substring']
+" Useful if there's a lot of camel case items
+let g:completion_matching_ignore_case = 1
 
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
 lua require('git-conflict').setup()
@@ -175,6 +188,11 @@ vim.api.nvim_set_keymap(
     ':lua require"telescope.builtin".live_grep({ hidden = true, file_ignore_patterns = {".git"} })<CR>',
     {noremap = true, silent = true}
 )
+
+-- DBUI mappings
+vim.api.nvim_set_keymap( "n", "<Leader>dbt", ":call db_ui#toggle()<CR>", {})
+vim.api.nvim_set_keymap( "n", "<Leader>dbf",  ":call db_ui#find_buffer()<CR>", {})
+
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
@@ -370,6 +388,8 @@ vim.keymap.set(
         require("neotest").run.run({vim.fn.expand("%"), strategy = "dap", env = pytest_env()})
     end
 )
+
+
 
 require "nvim-treesitter.configs".setup {
     ensure_installed = {"c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript"},
