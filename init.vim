@@ -99,9 +99,9 @@ end
 local dap = require("dap")
 
 local dapui = require("dapui").setup()
- dap.listeners.after.event_initialized["dapui_config"] = function()
-   require("dapui").open()
- end
+dap.listeners.after.event_initialized["dapui_config"] = function()
+    require("dapui").open()
+end
 
 dap.adapters.dart = {
     type = "executable",
@@ -166,15 +166,12 @@ lspconfig.dartls.setup {
     capabilities = capabilities
 }
 
-
 vim.keymap.set("n", "<Space>", "<Nop>", {silent = true, remap = false})
 vim.g.mapleader = " "
 
 vim.api.nvim_set_keymap("n", "<leader>du", ':lua require("dapui").toggle()<CR>', {noremap = true, silent = true})
 
 local builtin = require("telescope.builtin")
--- vim.keymap.set("n", "<leader>fg", builtin.live_grep, { hidden = true })
--- vim.keymap.set("n", "<leader>ff", builtin.find_files, { hidden = true })
 vim.keymap.set("n", "<leader>fb", builtin.buffers, {})
 vim.api.nvim_set_keymap(
     "n",
@@ -190,8 +187,8 @@ vim.api.nvim_set_keymap(
 )
 
 -- DBUI mappings
-vim.api.nvim_set_keymap( "n", "<Leader>dbt", ":call db_ui#toggle()<CR>", {})
-vim.api.nvim_set_keymap( "n", "<Leader>dbf",  ":call db_ui#find_buffer()<CR>", {})
+vim.api.nvim_set_keymap("n", "<Leader>dbt", ":call db_ui#toggle()<CR>", {})
+vim.api.nvim_set_keymap("n", "<Leader>dbf", ":call db_ui#find_buffer()<CR>", {})
 
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
@@ -389,8 +386,6 @@ vim.keymap.set(
     end
 )
 
-
-
 require "nvim-treesitter.configs".setup {
     ensure_installed = {"c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript"},
     sync_install = false,
@@ -514,4 +509,5 @@ cmp.setup.cmdline(
         )
     }
 )
+
 EOF
