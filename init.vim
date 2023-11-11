@@ -11,7 +11,7 @@ autocmd TextChanged .* update
 autocmd InsertLeave .* update
 
 call plug#begin()
-Plug 'vim-airline/vim-airline'
+Plug 'nvim-lualine/lualine.nvim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'neomake/neomake'
 Plug 'machakann/vim-highlightedyank'
@@ -72,6 +72,9 @@ call neomake#configure#automake('nrwi', 500)
 colorscheme catppuccin-mocha
 
 lua << EOF
+
+-- Setup lualine
+require('lualine').setup()
 
 local json = require("json")
 
@@ -509,5 +512,4 @@ cmp.setup.cmdline(
         )
     }
 )
-
 EOF
