@@ -27,7 +27,6 @@ Plug 'dart-lang/dart-vim-plugin'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.x' }
 Plug 'numToStr/Comment.nvim'
-Plug 'folke/trouble.nvim'
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'nvim-neotest/neotest'
@@ -204,6 +203,9 @@ vim.api.nvim_set_keymap(
 vim.api.nvim_set_keymap("n", "<Leader>dbt", ":call db_ui#toggle()<CR>", {})
 vim.api.nvim_set_keymap("n", "<Leader>dbf", ":call db_ui#find_buffer()<CR>", {})
 
+-- Problems view
+vim.keymap.set("n", "<Leader>xx", vim.cmd.lopen, {})
+
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
@@ -346,49 +348,6 @@ vim.keymap.set(
     function()
         local widgets = require("dap.ui.widgets")
         widgets.centered_float(widgets.scopes)
-    end
-)
-
-vim.keymap.set(
-    "n",
-    "<leader>xx",
-    function()
-        require("trouble").open()
-    end
-)
-vim.keymap.set(
-    "n",
-    "<leader>xw",
-    function()
-        require("trouble").open("workspace_diagnostics")
-    end
-)
-vim.keymap.set(
-    "n",
-    "<leader>xd",
-    function()
-        require("trouble").open("document_diagnostics")
-    end
-)
-vim.keymap.set(
-    "n",
-    "<leader>xq",
-    function()
-        require("trouble").open("quickfix")
-    end
-)
-vim.keymap.set(
-    "n",
-    "<leader>xl",
-    function()
-        require("trouble").open("loclist")
-    end
-)
-vim.keymap.set(
-    "n",
-    "gR",
-    function()
-        require("trouble").open("lsp_references")
     end
 )
 
