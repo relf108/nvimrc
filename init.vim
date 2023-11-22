@@ -47,6 +47,7 @@ Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'folke/noice.nvim'
 Plug 'MunifTanjim/nui.nvim'
+Plug 'rcarriga/nvim-notify'
 call plug#end()
 
 " DADBOD "
@@ -73,6 +74,9 @@ call neomake#configure#automake('nrwi', 500)
 colorscheme catppuccin-mocha
 
 lua << EOF
+
+vim.opt.termguicolors = true
+vim.notify = require("notify")
 
 -- Setup lualine
 require('lualine').setup {
