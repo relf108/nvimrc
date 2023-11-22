@@ -45,6 +45,8 @@ Plug 'rcarriga/nvim-dap-ui'
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'kristijanhusak/vim-dadbod-completion'
+Plug 'folke/noice.nvim'
+Plug 'MunifTanjim/nui.nvim'
 call plug#end()
 
 " DADBOD "
@@ -59,12 +61,12 @@ let g:completion_matching_strategy_list = ['exact', 'substring']
 " Useful if there's a lot of camel case items
 let g:completion_matching_ignore_case = 1
 
+let g:neomake_python_enabled_makers = ['pylint']
+let g:floaterm_keymap_toggle = '<C-t>'
+
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
 lua require('git-conflict').setup()
-
-let g:neomake_python_enabled_makers = ['pylint']
-
-let g:floaterm_keymap_toggle = '<C-t>'
+lua require('noice').setup()
 
 call neomake#configure#automake('nrwi', 500)
 
