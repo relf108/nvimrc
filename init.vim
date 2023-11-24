@@ -80,26 +80,26 @@ vim.opt.termguicolors = true
 vim.notify = require("notify")
 
 -- Setup smooth scrolling
-require('cinnamon').setup {
-  extra_keymaps = true,
-  override_keymaps = true,
-  default_delay = 1,
-  max_length = 500,
+require("cinnamon").setup {
+    extra_keymaps = true,
+    override_keymaps = true,
+    default_delay = 0.1,
+    max_length = 250 
 }
 
 -- Setup lualine
-require('lualine').setup {
-  options = {
-    globalstatus = true,
-  },
-  sections = {
-    lualine_c = {
-      {
-        'filename',
-        path = 1
-      }
+require("lualine").setup {
+    options = {
+        globalstatus = true
+    },
+    sections = {
+        lualine_c = {
+            {
+                "filename",
+                path = 1
+            }
+        }
     }
-  }
 }
 local json = require("json")
 
@@ -497,4 +497,5 @@ cmp.setup.cmdline(
         )
     }
 )
+
 EOF
