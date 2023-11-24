@@ -82,8 +82,10 @@ vim.notify = require("notify")
 -- Setup smooth scrolling
 require("cinnamon").setup {
     extra_keymaps = true,
+    extended_keymaps = true,
     override_keymaps = true,
-    default_delay = 0.1,
+    always_scroll = true,
+    default_delay = 0.05,
     max_length = 250 
 }
 
