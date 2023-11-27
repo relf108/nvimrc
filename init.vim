@@ -92,27 +92,29 @@ require("cinnamon").setup {
 
 -- Lualine theme
 local colors = {
-    blue = "#80a0ff",
-    cyan = "#79dac8",
-    catppuccin_base = "#1e1e2e",
+    blue = "#89b4fa",
+    teal = "#94e2d5",
+    base = "#1e1e2e",
     black = "#080808",
-    white = "#c6c6c6",
-    red = "#ff5189",
-    violet = "#d183e8",
-    grey = "#303030",
-    orange = "#fab387"
+    white = "#cdd6f4",
+    red = "#f38ba8",
+    mauve = "#cba6f7",
+    surface_zero = "#313244",
+    peach = "#fab387",
+    green = "#a6e3a1"
 }
 
-local bubbles_theme = {
+local catppuccin_theme = {
     normal = {
-        a = {fg = colors.black, bg = colors.violet},
-        b = {fg = colors.white, bg = colors.grey},
-        c = {fg = colors.catppuccin_base, bg = colors.catppuccin_base}
+        a = {fg = colors.black, bg = colors.mauve},
+        b = {fg = colors.white, bg = colors.surface_zero},
+        c = {fg = colors.base, bg = colors.base}
     },
     insert = {a = {fg = colors.black, bg = colors.blue}},
-    visual = {a = {fg = colors.black, bg = colors.cyan}},
+    visual = {a = {fg = colors.black, bg = colors.teal}},
     replace = {a = {fg = colors.black, bg = colors.red}},
-    terminal = {a = {fg = colors.black, bg = colors.orange}},
+    terminal = {a = {fg = colors.black, bg = colors.peach}},
+    command = {a = {fg = colors.black, bg = colors.green}},
     inactive = {
         a = {fg = colors.white, bg = colors.black},
         b = {fg = colors.white, bg = colors.black},
@@ -122,7 +124,7 @@ local bubbles_theme = {
 
 require("lualine").setup {
     options = {
-        theme = bubbles_theme,
+        theme = catppuccin_theme,
         component_separators = "|",
         section_separators = {left = "", right = ""},
         globalstatus = true
