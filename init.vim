@@ -48,7 +48,6 @@ Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'folke/noice.nvim'
 Plug 'MunifTanjim/nui.nvim'
 Plug 'rcarriga/nvim-notify'
-Plug 'declancm/cinnamon.nvim'
 call plug#end()
 
 " DADBOD "
@@ -79,16 +78,6 @@ lua << EOF
 
 vim.opt.termguicolors = true
 vim.notify = require("notify")
-
--- Setup smooth scrolling
-require("cinnamon").setup {
-    extra_keymaps = true,
-    extended_keymaps = true,
-    override_keymaps = true,
-    always_scroll = true,
-    default_delay = 0.05,
-    max_length = 250
-}
 
 -- Lualine theme
 local colors = {
