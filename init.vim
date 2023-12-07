@@ -298,6 +298,10 @@ vim.api.nvim_create_autocmd(
     }
 )
 
+vim.keymap.set("n", "<leader>nd", function()
+  require("noice").cmd("dismiss")
+end)
+
 vim.keymap.set(
     "n",
     "<F5>",
