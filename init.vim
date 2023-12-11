@@ -1,14 +1,12 @@
 set relativenumber
 set autowriteall
-set smartindent
 set expandtab
 set shiftwidth=2
 set tabstop=2
 set clipboard+=unnamedplus
 
-autocmd BufWritePre .* :%s/\s\+$//e
-autocmd TextChanged .* update
-autocmd InsertLeave .* update
+" autocmd TextChanged .* update
+" autocmd InsertLeave .* update
 
 call plug#begin()
 Plug 'nvim-lualine/lualine.nvim'
@@ -67,7 +65,6 @@ let g:floaterm_keymap_toggle = '<C-t>'
 
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
 lua require('git-conflict').setup()
-lua require('noice').setup()
 
 call neomake#configure#automake('nrwi', 500)
 
@@ -110,6 +107,25 @@ local catppuccin_theme = {
         c = {fg = colors.black, bg = colors.black}
     }
 }
+
+require("noice").setup({
+  lsp = {
+    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true,
+    },
+  },
+  -- you can enable a preset for easier configuration
+  presets = {
+    bottom_search = true, -- use a classic bottom cmdline for search
+    command_palette = true, -- position the cmdline and popupmenu together
+    long_message_to_split = true, -- long messages will be sent to a split
+    inc_rename = false, -- enables an input dialog for inc-rename.nvim
+    lsp_doc_border = false, -- add a border to hover docs and signature help
+  },
+})
 
 require("lualine").setup {
     options = {
@@ -412,8 +428,8 @@ vim.keymap.set(
 )
 
 require "nvim-treesitter.configs".setup {
-    ensure_installed = {"c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript"},
-    sync_install = false,
+    ensure_installed = {"c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript", "regex", "bash", "markdown", "markdown_inline"},
+    sync_install = true,
     ignore_install = {"javascript"},
     highlight = {
         enable = true,
