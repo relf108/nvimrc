@@ -1,16 +1,13 @@
 set relativenumber
 set autowriteall
 set expandtab
-set shiftwidth=2
 set tabstop=2
+set shiftwidth=2
 set clipboard+=unnamedplus
 
-" autocmd TextChanged .* update
-" autocmd InsertLeave .* update
-
 call plug#begin()
+Plug 'windwp/nvim-autopairs'
 Plug 'nvim-lualine/lualine.nvim'
-Plug 'jiangmiao/auto-pairs'
 Plug 'neomake/neomake'
 Plug 'machakann/vim-highlightedyank'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
@@ -75,6 +72,8 @@ lua << EOF
 
 vim.opt.termguicolors = true
 vim.notify = require("notify")
+
+require("nvim-autopairs").setup {}
 
 -- Lualine theme
 local colors = {
