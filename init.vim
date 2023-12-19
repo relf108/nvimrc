@@ -1,8 +1,8 @@
 set relativenumber
 set autowriteall
-" set expandtab
-" set tabstop=4
-" set shiftwidth=4
+set expandtab
+set tabstop=2
+set shiftwidth=2
 set clipboard+=unnamedplus
 
 call plug#begin()
@@ -15,7 +15,6 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'mfussenegger/nvim-dap-python'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate'}
-Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'voldikss/vim-floaterm'
 Plug 'github/copilot.vim'
 Plug 'dart-lang/dart-vim-plugin'
