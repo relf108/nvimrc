@@ -68,7 +68,6 @@ colorscheme catppuccin-mocha
 
 lua << EOF
 
-
 vim.opt.termguicolors = true
 vim.notify = require("notify")
 
@@ -106,22 +105,24 @@ local catppuccin_theme = {
     }
 }
 
-require("noice").setup({
-  lsp = {
-    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-    override = {
-      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-      ["vim.lsp.util.stylize_markdown"] = true,
-      ["cmp.entry.get_documentation"] = true,
-    },
-  },
-  -- you can enable a preset for easier configuration
-  presets = {
-    command_palette = true, -- position the cmdline and popupmenu together
-    long_message_to_split = true, -- long messages will be sent to a split
-    lsp_doc_border = true, -- add a border to hover docs and signature help
-  },
-})
+require("noice").setup(
+    {
+        lsp = {
+            -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+            override = {
+                ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+                ["vim.lsp.util.stylize_markdown"] = true,
+                ["cmp.entry.get_documentation"] = true
+            }
+        },
+        -- you can enable a preset for easier configuration
+        presets = {
+            command_palette = true, -- position the cmdline and popupmenu together
+            long_message_to_split = true, -- long messages will be sent to a split
+            lsp_doc_border = true -- add a border to hover docs and signature help
+        }
+    }
+)
 
 require("lualine").setup {
     options = {
@@ -138,9 +139,9 @@ require("lualine").setup {
         lualine_c = {"fileformat"},
         lualine_x = {
             {
-              require("noice").api.status.command.get,
-              cond = require("noice").api.status.command.has,
-              color = { fg = colors.peach, bg = colors.base},
+                require("noice").api.status.command.get,
+                cond = require("noice").api.status.command.has,
+                color = {fg = colors.peach, bg = colors.base}
             }
         },
         lualine_y = {"filetype", "progress"},
@@ -316,9 +317,13 @@ vim.api.nvim_create_autocmd(
     }
 )
 
-vim.keymap.set("n", "<leader>nd", function()
-  require("noice").cmd("dismiss")
-end)
+vim.keymap.set(
+    "n",
+    "<leader>nd",
+    function()
+        require("noice").cmd("dismiss")
+    end
+)
 
 vim.keymap.set(
     "n",
@@ -430,7 +435,20 @@ vim.keymap.set(
 )
 
 require "nvim-treesitter.configs".setup {
-    ensure_installed = {"c", "lua", "vim", "vimdoc", "query", "python", "dart", "typescript", "regex", "bash", "markdown", "markdown_inline"},
+    ensure_installed = {
+        "c",
+        "lua",
+        "vim",
+        "vimdoc",
+        "query",
+        "python",
+        "dart",
+        "typescript",
+        "regex",
+        "bash",
+        "markdown",
+        "markdown_inline"
+    },
     sync_install = true,
     ignore_install = {"javascript"},
     highlight = {
@@ -552,4 +570,5 @@ cmp.setup.cmdline(
         )
     }
 )
+
 EOF
