@@ -68,12 +68,8 @@ colorscheme catppuccin-mocha
 
 lua << EOF
 
-vim.opt.termguicolors = true
-vim.notify = require("notify")
 
-require("nvim-autopairs").setup {}
-
--- Lualine theme
+-- Theme config - matches catppuccino-mocha
 local colors = {
     blue = "#89b4fa",
     teal = "#94e2d5",
@@ -105,6 +101,7 @@ local catppuccin_theme = {
     }
 }
 
+-- Noice config
 require("noice").setup(
     {
         lsp = {
@@ -124,6 +121,7 @@ require("noice").setup(
     }
 )
 
+-- Lualine config
 require("lualine").setup {
     options = {
         theme = catppuccin_theme,
@@ -152,6 +150,12 @@ require("lualine").setup {
     tabline = {},
     extensions = {}
 }
+
+vim.opt.termguicolors = true
+
+vim.notify = require("notify")
+
+require("nvim-autopairs").setup {}
 
 local json = require("json")
 
