@@ -5,6 +5,9 @@ set tabstop=2
 set shiftwidth=2
 set clipboard+=unnamedplus
 
+autocmd TextChanged .* silent update
+autocmd InsertLeave .* silent update
+
 call plug#begin()
 Plug 'windwp/nvim-autopairs'
 Plug 'nvim-lualine/lualine.nvim'
@@ -42,6 +45,7 @@ Plug 'kristijanhusak/vim-dadbod-completion'
 Plug 'folke/noice.nvim'
 Plug 'MunifTanjim/nui.nvim'
 Plug 'rcarriga/nvim-notify'
+Plug 'kmontocam/nvim-conda'
 call plug#end()
 
 " DADBOD "
@@ -277,6 +281,9 @@ vim.api.nvim_set_keymap("n", "<Leader>dbf", ":call db_ui#find_buffer()<CR>", {})
 -- Problems view
 vim.keymap.set("n", "<Leader>xx", vim.cmd.lopen, {})
 
+-- Conda
+vim.keymap.set("n", "<Leader>cc", vim.cmd.CondaActivate, {})
+
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
@@ -320,6 +327,7 @@ vim.api.nvim_create_autocmd(
         end
     }
 )
+
 
 vim.keymap.set(
     "n",
