@@ -1,12 +1,23 @@
+" Show relative line numbers
 set relativenumber
-set autowriteall
+
+" Default indentation if not overridden by TreeSitter
 set expandtab
 set tabstop=2
 set shiftwidth=2
+
+" Save yanks to system clipboard
 set clipboard+=unnamedplus
 
+" Auto save on text change
+set autowrite
+set autowriteall
 autocmd TextChanged .* silent update
 autocmd InsertLeave .* silent update
+
+" Remove trailing whitespace
+autocmd BufWritePre * g/\s\+$/s///e
+autocmd BufWritePost * normal! `^
 
 call plug#begin()
 Plug 'windwp/nvim-autopairs'
@@ -48,30 +59,36 @@ Plug 'rcarriga/nvim-notify'
 Plug 'kmontocam/nvim-conda'
 call plug#end()
 
-" DADBOD "
+" DADBOD auto completion"
 autocmd FileType sql,mysql,plsql lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
 let g:completion_chain_complete_list = {
     \   'sql': [
     \    {'complete_items': ['vim-dadbod-completion']},
     \   ],
     \ }
-" Make sure `substring` is part of this list. Other items are optional for this completion source
 let g:completion_matching_strategy_list = ['exact', 'substring']
-" Useful if there's a lot of camel case items
 let g:completion_matching_ignore_case = 1
 
+
+" Python linting
 let g:neomake_python_enabled_makers = ['pylint']
+
+" Toggle Term
 let g:floaterm_keymap_toggle = '<C-t>'
 
+" Point Python dap adapter to conda python
 lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
+
+" Git conflict resolution
 lua require('git-conflict').setup()
 
+" Neomake config
 call neomake#configure#automake('nrwi', 500)
 
+" Theme
 colorscheme catppuccin-mocha
 
 lua << EOF
-
 
 -- Theme config - matches catppuccino-mocha
 local colors = {
@@ -327,7 +344,6 @@ vim.api.nvim_create_autocmd(
         end
     }
 )
-
 
 vim.keymap.set(
     "n",
