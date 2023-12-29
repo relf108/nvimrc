@@ -1,95 +1,110 @@
-" Show relative line numbers
-set relativenumber
+-- Show relative line numbers
+vim.opt.relativenumber = true
 
-" Default indentation if not overridden by TreeSitter
-set expandtab
-set tabstop=2
-set shiftwidth=2
+-- Default indentation if not overridden by TreeSitter
+vim.opt.expandtab = true
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
 
-" Save yanks to system clipboard
-set clipboard+=unnamedplus
+-- Save yanks to system clipboard
+vim.opt.clipboard = "unnamedplus"
 
-" Auto save on text change
-set autowrite
-set autowriteall
-autocmd TextChanged .* silent update
-autocmd InsertLeave .* silent update
+-- Auto save on text change
+vim.opt.autowrite = true
+vim.opt.autowriteall = true
+vim.autocmd = {
+    "TextChanged",
+    ".*",
+    "silent",
+    "update"
+}
+vim.autocmd = {
+    "InsertLeave",
+    ".*",
+    "silent",
+    "update"
+}
 
-" Remove trailing whitespace
-autocmd BufWritePre .* g/\s\+$/s///e
-autocmd BufWritePost .* normal! `^
+-- Remove trailing whitespace
+vim.autocmd = {
+    "BufWritePre",
+    ".*",
+    "silent",
+    "g/\\s\\+$/s///e"
+}
+-- autocmd BufWritePre .* g/\s\+$/s///e
+vim.autocmd = {
+  "BufWritePost",
+  ".*",
+  "normal!",
+  "`^"
+}
 
-call plug#begin()
-Plug 'windwp/nvim-autopairs'
-Plug 'nvim-lualine/lualine.nvim'
-Plug 'neomake/neomake'
-Plug 'machakann/vim-highlightedyank'
-Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
-Plug 'mfussenegger/nvim-dap'
-Plug 'mfussenegger/nvim-dap-python'
-Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-treesitter/nvim-treesitter', { 'do': ':TSUpdate'}
-Plug 'voldikss/vim-floaterm'
-Plug 'github/copilot.vim'
-Plug 'dart-lang/dart-vim-plugin'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.x' }
-Plug 'numToStr/Comment.nvim'
-Plug 'nvim-tree/nvim-web-devicons'
-Plug 'antoinemadec/FixCursorHold.nvim'
-Plug 'nvim-neotest/neotest'
-Plug 'nvim-neotest/neotest-python'
-Plug 'preservim/nerdtree'
-Plug 'akinsho/git-conflict.nvim'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-cmdline'
-Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-vsnip'
-Plug 'hrsh7th/vim-vsnip'
-Plug 'mattboehm/vim-unstack'
-Plug 'rcarriga/nvim-dap-ui'
-Plug 'tpope/vim-dadbod'
-Plug 'kristijanhusak/vim-dadbod-ui'
-Plug 'kristijanhusak/vim-dadbod-completion'
-Plug 'folke/noice.nvim'
-Plug 'MunifTanjim/nui.nvim'
-Plug 'rcarriga/nvim-notify'
-Plug 'kmontocam/nvim-conda'
-call plug#end()
+vim.keymap.set("n", "<Space>", "<Nop>", {silent = true, remap = false})
+vim.g.mapleader = " "
 
-" DADBOD auto completion"
-autocmd FileType sql,mysql,plsql lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })
-let g:completion_chain_complete_list = {
-    \   'sql': [
-    \    {'complete_items': ['vim-dadbod-completion']},
-    \   ],
-    \ }
-let g:completion_matching_strategy_list = ['exact', 'substring']
-let g:completion_matching_ignore_case = 1
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system(
+        {
+            "git",
+            "clone",
+            "--filter=blob:none",
+            "https://github.com/folke/lazy.nvim.git",
+            "--branch=stable", -- latest stable release
+            lazypath
+        }
+    )
+end
+vim.opt.rtp:prepend(lazypath)
 
-
-" Python linting
-" 'pylint'
-let g:neomake_python_enabled_makers = ['flake8']
-
-" Toggle Term
-let g:floaterm_keymap_toggle = '<C-t>'
-
-" Point Python dap adapter to conda python
-lua require('dap-python').setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
-
-" Git conflict resolution
-lua require('git-conflict').setup()
-
-" Neomake config
-call neomake#configure#automake('nrwi', 500)
-
-" Theme
-colorscheme catppuccin-mocha
-
-lua << EOF
+require("lazy").setup(
+    {
+        {
+            "LazyVim/LazyVim",
+            opts = {
+                colorscheme = "catppuccin"
+            }
+        },
+        "windwp/nvim-autopairs",
+        "nvim-lualine/lualine.nvim",
+        "neomake/neomake",
+        "machakann/vim-highlightedyank",
+        {"catppuccin/nvim", as = "catppuccin"},
+        "mfussenegger/nvim-dap",
+        "mfussenegger/nvim-dap-python",
+        "neovim/nvim-lspconfig",
+        {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"},
+        "voldikss/vim-floaterm",
+        "github/copilot.vim",
+        "dart-lang/dart-vim-plugin",
+        "nvim-lua/plenary.nvim",
+        {"nvim-telescope/telescope.nvim", branch = "0.1.x"},
+        "numToStr/Comment.nvim",
+        "nvim-tree/nvim-web-devicons",
+        "antoinemadec/FixCursorHold.nvim",
+        "nvim-neotest/neotest",
+        "nvim-neotest/neotest-python",
+        "preservim/nerdtree",
+        "akinsho/git-conflict.nvim",
+        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-path",
+        "hrsh7th/cmp-cmdline",
+        "hrsh7th/nvim-cmp",
+        "hrsh7th/cmp-vsnip",
+        "hrsh7th/vim-vsnip",
+        "mattboehm/vim-unstack",
+        "rcarriga/nvim-dap-ui",
+        "tpope/vim-dadbod",
+        "kristijanhusak/vim-dadbod-ui",
+        "kristijanhusak/vim-dadbod-completion",
+        "folke/noice.nvim",
+        "MunifTanjim/nui.nvim",
+        "rcarriga/nvim-notify",
+        "kmontocam/nvim-conda"
+    }
+)
 
 -- Theme config - matches catppuccino-mocha
 local colors = {
@@ -271,9 +286,6 @@ lspconfig.dartls.setup {
     root_dir = lspconfig.util.root_pattern("pubspec.yaml", ".git"),
     capabilities = capabilities
 }
-
-vim.keymap.set("n", "<Space>", "<Nop>", {silent = true, remap = false})
-vim.g.mapleader = " "
 
 vim.api.nvim_set_keymap("n", "<leader>du", ':lua require("dapui").toggle()<CR>', {noremap = true, silent = true})
 
@@ -599,5 +611,3 @@ cmp.setup.cmdline(
         )
     }
 )
-
-EOF
