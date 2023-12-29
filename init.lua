@@ -32,7 +32,6 @@ vim.autocmd = {
     "silent",
     "g/\\s\\+$/s///e"
 }
--- autocmd BufWritePre .* g/\s\+$/s///e
 vim.autocmd = {
   "BufWritePost",
   ".*",
@@ -42,6 +41,9 @@ vim.autocmd = {
 
 vim.keymap.set("n", "<Space>", "<Nop>", {silent = true, remap = false})
 vim.g.mapleader = " "
+
+-- Toggle term
+vim.g.floaterm_keymap_toggle = "<C-t>"
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -63,7 +65,10 @@ require("lazy").setup(
         {
             "LazyVim/LazyVim",
             opts = {
-                colorscheme = "catppuccin"
+                colorscheme = "catppuccin",
+            },
+            checker = {
+              enabled = true,
             }
         },
         "windwp/nvim-autopairs",
@@ -105,6 +110,34 @@ require("lazy").setup(
         "kmontocam/nvim-conda"
     }
 )
+
+-- Autocomplete for vim-dadbod
+vim.autocmd = {
+    "FileType",
+    "sql,mysql,plsql",
+    "lua require('cmp').setup.buffer({ sources = {{ name = 'vim-dadbod-completion' }} })"
+}
+vim.g.completion_chain_complete_list = {
+    sql = {
+        complete_items = {
+	   "vim-dadbod-completion"
+	}
+    }
+}
+vim.g.completion_matching_strategy_list = {'exact', 'substring'}
+vim.g.completion_matching_ignore_case = 1
+
+-- Python linting
+vim.g.neomake_python_enabled_makers = {"flake8"}
+
+-- Point Python dap adapter to conda
+require("dap-python").setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
+
+-- Git conflict resolution
+require("git-conflict").setup()
+
+-- Neomake config
+vim.fn["neomake#configure#automake"]("nrwi", 100)
 
 -- Theme config - matches catppuccino-mocha
 local colors = {
@@ -313,6 +346,7 @@ vim.keymap.set("n", "<Leader>xx", vim.cmd.lopen, {})
 
 -- Conda
 vim.keymap.set("n", "<Leader>cc", vim.cmd.CondaActivate, {})
+
 
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
