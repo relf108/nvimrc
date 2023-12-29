@@ -16,8 +16,8 @@ autocmd TextChanged .* silent update
 autocmd InsertLeave .* silent update
 
 " Remove trailing whitespace
-autocmd BufWritePre * g/\s\+$/s///e
-autocmd BufWritePost * normal! `^
+autocmd BufWritePre .* g/\s\+$/s///e
+autocmd BufWritePost .* normal! `^
 
 call plug#begin()
 Plug 'windwp/nvim-autopairs'
@@ -71,7 +71,8 @@ let g:completion_matching_ignore_case = 1
 
 
 " Python linting
-let g:neomake_python_enabled_makers = ['pylint']
+" 'pylint'
+let g:neomake_python_enabled_makers = ['flake8']
 
 " Toggle Term
 let g:floaterm_keymap_toggle = '<C-t>'
