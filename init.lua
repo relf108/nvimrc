@@ -33,10 +33,10 @@ vim.autocmd = {
     "g/\\s\\+$/s///e"
 }
 vim.autocmd = {
-  "BufWritePost",
-  ".*",
-  "normal!",
-  "`^"
+    "BufWritePost",
+    ".*",
+    "normal!",
+    "`^"
 }
 
 vim.keymap.set("n", "<Space>", "<Nop>", {silent = true, remap = false})
@@ -65,10 +65,13 @@ require("lazy").setup(
         {
             "LazyVim/LazyVim",
             opts = {
-                colorscheme = "catppuccin",
+                colorscheme = "catppuccin"
             },
             checker = {
-              enabled = true,
+                enabled = true
+            },
+            defaults = {
+                lazy = true
             }
         },
         "windwp/nvim-autopairs",
@@ -107,7 +110,11 @@ require("lazy").setup(
         "folke/noice.nvim",
         "MunifTanjim/nui.nvim",
         "rcarriga/nvim-notify",
-        "kmontocam/nvim-conda"
+        "kmontocam/nvim-conda",
+        {
+            "folke/trouble.nvim",
+            dependencies = {"nvim-tree/nvim-web-devicons"}
+        }
     }
 )
 
@@ -120,11 +127,11 @@ vim.autocmd = {
 vim.g.completion_chain_complete_list = {
     sql = {
         complete_items = {
-	   "vim-dadbod-completion"
-	}
+            "vim-dadbod-completion"
+        }
     }
 }
-vim.g.completion_matching_strategy_list = {'exact', 'substring'}
+vim.g.completion_matching_strategy_list = {"exact", "substring"}
 vim.g.completion_matching_ignore_case = 1
 
 -- Python linting
@@ -342,11 +349,52 @@ vim.api.nvim_set_keymap("n", "<Leader>dbt", ":call db_ui#toggle()<CR>", {})
 vim.api.nvim_set_keymap("n", "<Leader>dbf", ":call db_ui#find_buffer()<CR>", {})
 
 -- Problems view
-vim.keymap.set("n", "<Leader>xx", vim.cmd.lopen, {})
+-- vim.keymap.set("n", "<Leader>xx", vim.cmd.lopen, {})
+vim.keymap.set(
+    "n",
+    "<leader>xx",
+    function()
+        require("trouble").toggle()
+    end
+)
+vim.keymap.set(
+    "n",
+    "<leader>xw",
+    function()
+        require("trouble").toggle("workspace_diagnostics")
+    end
+)
+vim.keymap.set(
+    "n",
+    "<leader>xd",
+    function()
+        require("trouble").toggle("document_diagnostics")
+    end
+)
+vim.keymap.set(
+    "n",
+    "<leader>xq",
+    function()
+        require("trouble").toggle("quickfix")
+    end
+)
+vim.keymap.set(
+    "n",
+    "<leader>xl",
+    function()
+        require("trouble").toggle("loclist")
+    end
+)
+vim.keymap.set(
+    "n",
+    "gR",
+    function()
+        require("trouble").toggle("lsp_references")
+    end
+)
 
 -- Conda
 vim.keymap.set("n", "<Leader>cc", vim.cmd.CondaActivate, {})
-
 
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
