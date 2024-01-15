@@ -43,7 +43,7 @@ return {
 					name = "Launch Flutter Program",
 					program = "${file}",
 					cwd = "${workspaceFolder}",
-					toolArgs = {"-d", "ios"}
+					toolArgs = { "-d", "ios" },
 				},
 			}
 			vim.keymap.set("n", "<F5>", function()
@@ -141,37 +141,37 @@ return {
 						elements = {
 							{
 								id = "breakpoints",
-								size = 0.25,
+								size = 0.15,
 							},
 							{
 								id = "stacks",
-								size = 0.25,
+								size = 0.15,
 							},
 							{
 								id = "watches",
-								size = 0.25,
+								size = 0.15,
 							},
 							{
 								id = "scopes",
-								size = 0.25,
+								size = 0.55,
 							},
 						},
 						position = "left",
-						size = 40,
+						size = 45,
 					},
 					{
 						elements = {
 							{
 								id = "repl",
-								size = 0.5,
+								size = 0.25,
 							},
 							{
 								id = "console",
-								size = 0.5,
+								size = 0.75,
 							},
 						},
 						position = "bottom",
-						size = 10,
+						size = 15,
 					},
 				},
 				mappings = {
