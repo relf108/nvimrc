@@ -46,6 +46,38 @@ vim.g.mapleader = " "
 -- Toggle term
 vim.g.floaterm_keymap_toggle = "<C-t>"
 
+-- Theme config - matches catppuccino-mocha
+vim.g.colors = {
+	blue = "#89b4fa",
+	teal = "#94e2d5",
+	base = "#1e1e2e",
+	black = "#080808",
+	white = "#cdd6f4",
+	red = "#f38ba8",
+	mauve = "#cba6f7",
+	surface_zero = "#313244",
+	peach = "#fab387",
+	green = "#a6e3a1",
+}
+
+vim.g.catppuccin_theme = {
+	normal = {
+		a = { fg = vim.g.colors.black, bg = vim.g.colors.mauve },
+		b = { fg = vim.g.colors.white, bg = vim.g.colors.surface_zero },
+		c = { fg = vim.g.colors.base, bg = vim.g.colors.base },
+	},
+	insert = { a = { fg = vim.g.colors.black, bg = vim.g.colors.blue } },
+	visual = { a = { fg = vim.g.colors.black, bg = vim.g.colors.teal } },
+	replace = { a = { fg = vim.g.colors.black, bg = vim.g.colors.red } },
+	terminal = { a = { fg = vim.g.colors.black, bg = vim.g.colors.peach } },
+	command = { a = { fg = vim.g.colors.black, bg = vim.g.colors.green } },
+	inactive = {
+		a = { fg = vim.g.colors.white, bg = vim.g.colors.black },
+		b = { fg = vim.g.colors.white, bg = vim.g.colors.black },
+		c = { fg = vim.g.colors.black, bg = vim.g.colors.black },
+	},
+}
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
@@ -80,9 +112,6 @@ vim.g.completion_matching_ignore_case = 1
 -- Python linting
 vim.g.neomake_python_enabled_makers = { "flake8" }
 
--- Point Python dap adapter to conda
-require("dap-python").setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
-
 -- Git conflict resolution
 require("git-conflict").setup()
 
@@ -90,87 +119,11 @@ require("git-conflict").setup()
 vim.fn["neomake#configure#automake"]("nrwi", 100)
 
 -- Theme config - matches catppuccino-mocha
-local colors = {
-	blue = "#89b4fa",
-	teal = "#94e2d5",
-	base = "#1e1e2e",
-	black = "#080808",
-	white = "#cdd6f4",
-	red = "#f38ba8",
-	mauve = "#cba6f7",
-	surface_zero = "#313244",
-	peach = "#fab387",
-	green = "#a6e3a1",
-}
-
-local catppuccin_theme = {
-	normal = {
-		a = { fg = colors.black, bg = colors.mauve },
-		b = { fg = colors.white, bg = colors.surface_zero },
-		c = { fg = colors.base, bg = colors.base },
-	},
-	insert = { a = { fg = colors.black, bg = colors.blue } },
-	visual = { a = { fg = colors.black, bg = colors.teal } },
-	replace = { a = { fg = colors.black, bg = colors.red } },
-	terminal = { a = { fg = colors.black, bg = colors.peach } },
-	command = { a = { fg = colors.black, bg = colors.green } },
-	inactive = {
-		a = { fg = colors.white, bg = colors.black },
-		b = { fg = colors.white, bg = colors.black },
-		c = { fg = colors.black, bg = colors.black },
-	},
-}
-
--- Noice config
-require("noice").setup({
-	lsp = {
-		-- override markdown rendering so that **cmp** and other plugins use **Treesitter**
-		override = {
-			["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-			["vim.lsp.util.stylize_markdown"] = true,
-			["cmp.entry.get_documentation"] = true,
-		},
-	},
-	-- you can enable a preset for easier configuration
-	presets = {
-		command_palette = true, -- position the cmdline and popupmenu together
-		long_message_to_split = true, -- long messages will be sent to a split
-		lsp_doc_border = true, -- add a border to hover docs and signature help
-	},
-})
 
 -- Mason config
 require("mason").setup()
 
 -- Lualine config
-require("lualine").setup({
-	options = {
-		theme = catppuccin_theme,
-		component_separators = "|",
-		section_separators = { left = "", right = "" },
-		globalstatus = true,
-	},
-	sections = {
-		lualine_a = {
-			{ "mode", separator = { left = "" }, right_padding = 2 },
-		},
-		lualine_b = { "branch", { "filename", path = 1 }, "diagnostics" },
-		lualine_c = { "fileformat" },
-		lualine_x = {
-			{
-				require("noice").api.status.command.get,
-				cond = require("noice").api.status.command.has,
-				color = { fg = colors.peach, bg = colors.base },
-			},
-		},
-		lualine_y = { "filetype", "progress" },
-		lualine_z = {
-			{ "location", separator = { right = "" }, left_padding = 2 },
-		},
-	},
-	tabline = {},
-	extensions = {},
-})
 
 vim.opt.termguicolors = true
 
@@ -240,44 +193,6 @@ local function pytest_env()
 		end
 	end
 end
-
-local dap = require("dap")
-
-require("dapui").setup()
-dap.listeners.after.event_initialized["dapui_config"] = function()
-	require("dapui").open()
-end
-
-dap.adapters.dart = {
-	type = "executable",
-	command = "dart",
-	args = { "debug_adapter" },
-}
-dap.configurations.dart = {
-	{
-		type = "dart",
-		request = "launch",
-		name = "Launch Dart Program",
-		program = "${file}",
-		cwd = "${workspaceFolder}",
-		args = { "--help" },
-	},
-}
-dap.adapters.dart = {
-	type = "executable",
-	command = "flutter",
-	args = { "debug_adapter" },
-}
-dap.configurations.dart = {
-	{
-		type = "dart",
-		request = "launch",
-		name = "Launch Flutter Program",
-		program = "${file}",
-		cwd = "${workspaceFolder}",
-		--   toolArgs = {"-d", "ios"}
-	},
-}
 
 local dapvscode = require("dap.ext.vscode")
 dapvscode.load_launchjs()
