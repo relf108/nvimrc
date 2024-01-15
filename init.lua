@@ -112,66 +112,10 @@ vim.g.completion_matching_ignore_case = 1
 -- Python linting
 vim.g.neomake_python_enabled_makers = { "flake8" }
 
--- Git conflict resolution
-require("git-conflict").setup()
-
 -- Neomake config
 vim.fn["neomake#configure#automake"]("nrwi", 100)
 
--- Theme config - matches catppuccino-mocha
-
--- Mason config
-require("mason").setup()
-
--- Lualine config
-
 vim.opt.termguicolors = true
-
-vim.notify = require("notify")
-
-require("nvim-autopairs").setup({})
-
--- then setup your lsp server as usual
-local lspconfig = require("lspconfig")
-
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-lspconfig.pyright.setup({
-	capabilities = capabilities,
-})
-lspconfig.tsserver.setup({
-	capabilities = capabilities,
-})
-lspconfig.rust_analyzer.setup({
-	settings = {
-		["rust-analyzer"] = {},
-	},
-	capabilities = capabilities,
-})
-
-lspconfig.dartls.setup({
-	filetypes = { "dart" },
-	init_options = {
-		closingLabels = true,
-		flutterOutline = true,
-		onlyAnalyzeProjectsWithOpenFiles = true,
-		outline = true,
-		suggestFromUnimportedLibraries = true,
-	},
-	root_dir = lspconfig.util.root_pattern("pubspec.yaml", ".git"),
-	capabilities = capabilities,
-})
-
-lspconfig.lua_ls.setup({
-	settings = {
-		Lua = {
-			completion = {
-				callSnippet = "Replace",
-			},
-		},
-	},
-})
-local json = require("json")
 
 local function file_exists(file)
 	local f = io.open(file, "rb")
@@ -186,7 +130,7 @@ local function pytest_env()
 		return {}
 	end
 	local file = io.open(".vscode/launch.json", "r")
-	local configs = json:decode(file:read("*all"))["configurations"]
+	local configs = require("json"):decode(file:read("*all"))["configurations"]
 	for _, config in pairs(configs) do
 		if config["module"] == "pytest" then
 			return config["env"]
@@ -231,32 +175,6 @@ vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
 vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist)
-
-vim.api.nvim_create_autocmd("LspAttach", {
-	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-	callback = function(ev)
-		vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
-
-		local opts = { buffer = ev.buf }
-		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-		vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-		vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-		vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-		vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-		vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
-		vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts)
-		vim.keymap.set("n", "<space>wl", function()
-			print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-		end, opts)
-		vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, opts)
-		vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
-		vim.keymap.set({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts)
-		vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-		vim.keymap.set("n", "<space>f", function()
-			vim.lsp.buf.format({ async = true })
-		end, opts)
-	end,
-})
 
 vim.keymap.set("n", "<leader>nd", function()
 	require("noice").cmd("dismiss")
