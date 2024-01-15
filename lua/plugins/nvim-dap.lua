@@ -19,7 +19,7 @@ return {
 			dap.adapters.dart = {
 				type = "executable",
 				command = "dart",
-				args = { "debug_avim.g.dapter" },
+				args = { "debug_adapter" },
 			}
 			dap.configurations.dart = {
 				{
@@ -34,7 +34,7 @@ return {
 			dap.adapters.dart = {
 				type = "executable",
 				command = "flutter",
-				args = { "debug_avim.g.dapter" },
+				args = { "debug_adapter" },
 			}
 			dap.configurations.dart = {
 				{
@@ -43,7 +43,7 @@ return {
 					name = "Launch Flutter Program",
 					program = "${file}",
 					cwd = "${workspaceFolder}",
-					--   toolArgs = {"-d", "ios"}
+					toolArgs = {"-d", "ios"}
 				},
 			}
 			vim.keymap.set("n", "<F5>", function()
