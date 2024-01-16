@@ -8,10 +8,49 @@ return {
 
 			lspconfig.pyright.setup({
 				capabilities = capabilities,
+				settings = {
+					python = {
+						analysis = {
+							autoSearchPaths = true,
+							useLibraryCodeForTypes = true,
+							diagnosticMode = "workspace",
+							typeCheckingMode = "basic",
+							stubPath = vim.fn.expand("~/.config/nvim/stubs"),
+							stubs = {
+								"django-stubs",
+								"mypy_django_plugin",
+								"mypy_drf_plugin",
+								"types-requests",
+								"types-python-dateutil",
+								"types-python",
+								"types-requests",
+								"types-urllib3",
+								"types-pytz",
+								"types-py",
+								"types-six",
+								"types-setuptools",
+								"types-simplejson",
+								"types-pkg_resources",
+								"types-pip",
+								"types-pipenv",
+								"types-pipdeptree",
+								"types-pip-tools",
+								"types-pip-shims",
+								"types-pip-licenses",
+								"types-pip-api",
+								"types-pip-api",
+								"types-pip-api",
+								"types-pip-api",
+							},
+						},
+					},
+				},
 			})
+
 			lspconfig.tsserver.setup({
 				capabilities = capabilities,
 			})
+
 			lspconfig.rust_analyzer.setup({
 				settings = {
 					["rust-analyzer"] = {},

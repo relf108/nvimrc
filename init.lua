@@ -93,9 +93,6 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("plugins")
 
--- Python linting
-vim.g.neomake_python_enabled_makers = { "flake8" }
-
 -- Neomake config
 vim.fn["neomake#configure#automake"]("nrwi", 100)
 
