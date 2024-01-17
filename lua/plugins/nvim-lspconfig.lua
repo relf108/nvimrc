@@ -47,6 +47,30 @@ return {
 				},
 			})
 
+      lspconfig.yamlls.setup({
+        capabilities = capabilities,
+        settings = {
+          yaml = {
+            schemas = {
+              ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "docker-compose.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-r2dbc-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-knative-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-core-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-streaming-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-kafka-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-http-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-kafka-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-kafka-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-kafka-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-kafka-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-kafka-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-kafka-schema.json"] = "application.yml",
+              ["https://raw.githubusercontent.com/projectriff/riff/master/riff-kafka-schema.json"] = "application.yml",
+            },
+          },
+        },
+      })
+
 			lspconfig.tsserver.setup({
 				capabilities = capabilities,
 			})
@@ -80,6 +104,7 @@ return {
 					},
 				},
 			})
+			vim.g.neomake_python_enabled_makers = { "pylint" }
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
