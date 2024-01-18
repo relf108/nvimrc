@@ -37,9 +37,21 @@ return {
           })
         end,
         -- Next, you can provide a dedicated handler for specific servers.
-        -- For example, a handler override for the `rust_analyzer`:
-        ["rust_analyzer"] = function()
-          require("rust-tools").setup({})
+        -- For example, a handler override for the `pylsp`:
+        ["pylsp"] = function()
+          require("lspconfig")["pylsp"].setup({
+            capabilities = capabilities,
+            settings = {
+              pylsp = {
+                plugins = {
+                  autopep8 = { enabled = false },
+                  pycodestyle = { enabled = false },
+                  flake8 = { enabled = true, maxLineLength = 120 },
+                  bandit = { enabled = true },
+                },
+              },
+            },
+          })
         end,
       })
     end,
