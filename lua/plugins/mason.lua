@@ -30,7 +30,9 @@ return {
 				ensure_installed = {
 					"jsonls",
 					"lua_ls",
+					"pyright",
 					"pylsp",
+					"jedi_language_server",
 					"yamlls",
 				},
 			})
@@ -43,6 +45,20 @@ return {
 						capabilities = capabilities,
 					})
 				end,
+				["pyright"] = function()
+					require("lspconfig")["pyright"].setup({
+						capabilities = capabilities,
+						settings = {
+							python = {
+								analysis = {
+									autoSearchPaths = { enabled = true },
+									diagnosticMode = "workspace",
+									useLibraryCodeForTypes = true,
+								},
+							},
+						},
+					})
+				end,
 				-- Next, you can provide a dedicated handler for specific servers.
 				-- For example, a handler override for the `pylsp`:
 				["pylsp"] = function()
@@ -50,9 +66,14 @@ return {
 						capabilities = capabilities,
 						settings = {
 							pylsp = {
+								analysis = {
+									autoSearchPaths = { enabled = true },
+									diagnosticMode = "workspace",
+								},
 								configurationSources = { "flake8" },
 								plugins = {
 									-- Linting
+									pyright = { enabled = false },
 									flake8 = { enabled = true, maxLineLength = 120 },
 									pycodestyle = { enabled = false },
 									pyflakes = { enabled = false },
