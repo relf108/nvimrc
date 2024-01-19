@@ -44,10 +44,8 @@ return {
             settings = {
               pylsp = {
                 plugins = {
-                  autopep8 = { enabled = false },
-                  pycodestyle = { enabled = false },
+                  pycodestyle = { enabled = true, maxLineLength = 120 },
                   flake8 = { enabled = true, maxLineLength = 120 },
-                  bandit = { enabled = true },
                 },
               },
             },
