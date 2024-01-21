@@ -2,6 +2,9 @@
 vim.opt.relativenumber = true
 vim.opt.number = true
 
+-- Set terminal to 24-bit color
+vim.opt.termguicolors = true
+
 -- Default indentation if not overridden by TreeSitter
 vim.opt.expandtab = true
 vim.opt.tabstop = 2
@@ -98,7 +101,6 @@ vim.fn["neomake#configure#automake"]("nrwi", 100)
 
 vim.g.completion_matching_strategy_list = { "exact", "substring" }
 vim.g.completion_matching_ignore_case = 1
-vim.opt.termguicolors = true
 
 function vim.g.file_exists(file)
 	local f = io.open(file, "rb")

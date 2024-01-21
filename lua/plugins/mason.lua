@@ -45,6 +45,8 @@ return {
 						capabilities = capabilities,
 					})
 				end,
+				-- Next, you can provide a dedicated handler for specific servers.
+				-- For example, a handler override for the `pyright`:
 				["pyright"] = function()
 					require("lspconfig")["pyright"].setup({
 						capabilities = capabilities,
@@ -59,8 +61,6 @@ return {
 						},
 					})
 				end,
-				-- Next, you can provide a dedicated handler for specific servers.
-				-- For example, a handler override for the `pylsp`:
 				["pylsp"] = function()
 					require("lspconfig")["pylsp"].setup({
 						capabilities = capabilities,
