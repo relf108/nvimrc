@@ -34,6 +34,7 @@ return {
 					"pylsp",
 					"jedi_language_server",
 					"yamlls",
+					"typos_lsp",
 				},
 			})
 			require("mason-lspconfig").setup_handlers({
