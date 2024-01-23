@@ -62,7 +62,7 @@ return {
 					"jsonls",
 					"lua_ls",
 					"ruff_lsp",
-          "pyright",
+					"pyright",
 					"yamlls",
 					"typos_lsp",
 					"marksman",

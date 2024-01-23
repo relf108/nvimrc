@@ -13,6 +13,9 @@ vim.opt.shiftwidth = 2
 -- Save yanks to system clipboard
 vim.opt.clipboard = "unnamedplus"
 
+-- Auto read on file change from external process
+vim.opt.autoread = true
+
 -- Auto save on text change
 vim.opt.autowrite = true
 vim.opt.autowriteall = true
@@ -27,20 +30,6 @@ vim.autocmd = {
 	".*",
 	"silent",
 	"update",
-}
-
--- Remove trailing whitespace
-vim.autocmd = {
-	"BufWritePre",
-	".*",
-	"silent",
-	"g/\\s\\+$/s///e",
-}
-vim.autocmd = {
-	"BufWritePost",
-	".*",
-	"normal!",
-	"`^",
 }
 
 vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
