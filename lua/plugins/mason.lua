@@ -22,71 +22,7 @@ return {
 			})
 		end,
 	},
-	{
-		"williamboman/mason-lspconfig.nvim",
-		config = function()
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
-			require("mason-lspconfig").setup({
-				ensure_installed = {
-					"jsonls",
-					"lua_ls",
-					"pyright",
-					"pylsp",
-					"jedi_language_server",
-					"yamlls",
-					"typos_lsp",
-				},
-			})
-			require("mason-lspconfig").setup_handlers({
-				-- The first entry (without a key) will be the default handler
-				-- and will be called for each installed server that doesn't have
-				-- a dedicated handler.
-				function(server_name) -- default handler (optional)
-					require("lspconfig")[server_name].setup({
-						capabilities = capabilities,
-					})
-				end,
-				-- Next, you can provide a dedicated handler for specific servers.
-				-- For example, a handler override for the `pyright`:
-				["pyright"] = function()
-					require("lspconfig")["pyright"].setup({
-						capabilities = capabilities,
-						settings = {
-							python = {
-								analysis = {
-									autoSearchPaths = { enabled = true },
-									diagnosticMode = "workspace",
-									useLibraryCodeForTypes = true,
-								},
-							},
-						},
-					})
-				end,
-				["pylsp"] = function()
-					require("lspconfig")["pylsp"].setup({
-						capabilities = capabilities,
-						settings = {
-							pylsp = {
-								analysis = {
-									autoSearchPaths = { enabled = true },
-									diagnosticMode = "workspace",
-								},
-								configurationSources = { "flake8" },
-								plugins = {
-									-- Linting
-									pyright = { enabled = false },
-									flake8 = { enabled = true, maxLineLength = 120 },
-									pycodestyle = { enabled = false },
-									pyflakes = { enabled = false },
-									mccabe = { enabled = false },
-								},
-							},
-						},
-					})
-				end,
-			})
-		end,
-	},
+
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
@@ -95,7 +31,6 @@ return {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
 					vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
-
 					local opts = { buffer = ev.buf }
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
@@ -115,6 +50,91 @@ return {
 						vim.lsp.buf.format({ async = true })
 					end, opts)
 				end,
+			})
+		end,
+	},
+
+	{
+		"williamboman/mason-lspconfig.nvim",
+		config = function()
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			require("mason-lspconfig").setup({
+				ensure_installed = {
+					"jsonls",
+					"lua_ls",
+					-- "pyright",
+					-- "pylsp",
+					"ruff_lsp",
+					"jedi_language_server",
+					"yamlls",
+					"typos_lsp",
+					"marksman",
+				},
+			})
+			require("mason-lspconfig").setup_handlers({
+				-- The first entry (without a key) will be the default handler
+				-- and will be called for each installed server that doesn't have
+				-- a dedicated handler.
+				function(server_name) -- default handler (optional)
+					require("lspconfig")[server_name].setup({
+						capabilities = capabilities,
+					})
+				end,
+				["ruff_lsp"] = function()
+					require("lspconfig")["ruff_lsp"].setup({
+						capabilities = capabilities,
+						init_options = {
+							settings = {
+								-- Any extra CLI arguments for `ruff` go here.
+								args = {},
+							},
+						},
+					})
+				end,
+				-- Next, you can provide a dedicated handler for specific servers.
+				-- For example, a handler override for the `pyright`:
+				-- ["pyright"] = function()
+				--   require("lspconfig")["pyright"].setup({
+				--     capabilities = capabilities,
+				--     settings = {
+				--       python = {
+				--         analysis = {
+				--           autoSearchPaths = { enabled = true },
+				--           diagnosticMode = "workspace",
+				--           useLibraryCodeForTypes = true,
+				--           diagnosticSeverityOverrides = {
+				--             reportUnusedImport = "none",
+				--             reportMissingImports = "none",
+				--             reportMissingModuleSource = "none",
+				--             reportUndefinedVariable = "none",
+				--           },
+				--         },
+				--       },
+				--     },
+				--   })
+				-- end,
+				-- ["pylsp"] = function()
+				-- 	require("lspconfig")["pylsp"].setup({
+				-- 		capabilities = capabilities,
+				-- 		settings = {
+				-- 			pylsp = {
+				-- 				analysis = {
+				-- 					autoSearchPaths = { enabled = true },
+				-- 					diagnosticMode = "workspace",
+				-- 				},
+				-- 				configurationSources = { "flake8" },
+				-- 				plugins = {
+				-- 					-- Linting
+				-- 					pyright = { enabled = false },
+				-- 					flake8 = { enabled = true, maxLineLength = 120 },
+				-- 					pycodestyle = { enabled = false },
+				-- 					pyflakes = { enabled = false },
+				-- 					mccabe = { enabled = false },
+				-- 				},
+				-- 			},
+				-- 		},
+				-- 	})
+				-- end,
 			})
 		end,
 	},
