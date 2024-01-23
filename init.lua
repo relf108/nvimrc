@@ -96,9 +96,6 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("plugins")
 
--- Neomake config
-vim.fn["neomake#configure#automake"]("nrwi", 100)
-
 vim.g.completion_matching_strategy_list = { "exact", "substring" }
 vim.g.completion_matching_ignore_case = 1
 

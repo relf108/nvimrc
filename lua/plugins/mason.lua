@@ -26,7 +26,6 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
-			vim.g.neomake_python_enabled_makers = { "none" }
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
@@ -63,7 +62,7 @@ return {
 					"jsonls",
 					"lua_ls",
 					"ruff_lsp",
-					"jedi_language_server",
+          "pyright",
 					"yamlls",
 					"typos_lsp",
 					"marksman",
