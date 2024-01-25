@@ -77,14 +77,24 @@ return {
 						capabilities = capabilities,
 					})
 				end,
+				["lua_ls"] = function(server_name) -- handler for lua_ls
+					require("lspconfig")[server_name].setup({
+						capabilities = capabilities,
+						settings = {
+							Lua = {
+								diagnostics = {
+									globals = { "vim" },
+								},
+							},
+						},
+					})
+				end,
 				["pyright"] = function() -- handler for pyright
 					require("lspconfig")["pyright"].setup({
 						capabilities = capabilities,
 						settings = {
 							python = {
 								analysis = {
-									autoSearchPaths = true,
-									useLibraryCodeForTypes = true,
 									diagnosticMode = "workspace",
 								},
 							},
@@ -95,11 +105,9 @@ return {
 					local ruff_conf = vim.fn.expand("~/.config/ruff/ruff.toml")
 					require("lspconfig")[server_name].setup({
 						capabilities = capabilities,
-						on_attach = function(client, bufnr)
-							-- Disable hover in favor of Pyright
-							client.server_capabilities.hoverProvider = false
-							client.server_capabilities.semanticTokensProvider = nil
-						end,
+            on_attach = function(client)
+              client.server_capabilities.hoverProvider = false
+            end,
 						init_options = {
 							settings = {
 								-- Any extra CLI arguments for `ruff` go here.
