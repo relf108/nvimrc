@@ -225,7 +225,7 @@ return {
 		dependencies = { "mfussenegger/nvim-dap", "kmontocam/nvim-conda" },
 		config = function()
 			require("mason-nvim-dap").setup({
-				ensure_installed = { "stylua", "debugpy" },
+				ensure_installed = { "stylua", "debugpy", "bashls" },
 				handlers = {
 					function(config)
 						-- all sources with no handler get passed here
