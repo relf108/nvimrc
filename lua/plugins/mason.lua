@@ -222,10 +222,9 @@ return {
 	},
 	{
 		"jay-babu/mason-nvim-dap.nvim",
-		dependencies = { "mfussenegger/nvim-dap", "kmontocam/nvim-conda" },
 		config = function()
 			require("mason-nvim-dap").setup({
-				ensure_installed = { "stylua", "debugpy", "bashls" },
+				ensure_installed = { "stylua", "bashls", "dart-debug-adapter" },
 				handlers = {
 					function(config)
 						-- all sources with no handler get passed here
@@ -233,19 +232,15 @@ return {
 						-- Keep original functionality
 						require("mason-nvim-dap").default_setup(config)
 					end,
-					python = function(config)
-						config.adapters = {
-							type = "executable",
-							command = os.getenv("CONDA_PREFIX") .. "/bin/python",
-							args = {
-								"-m",
-								"debugpy.adapter",
-							},
-						}
-						require("mason-nvim-dap").default_setup(config)
-					end,
 				},
 			})
+		end,
+	},
+	{
+		-- This just works better with Conda, not worth the hassle with Mason
+		"mfussenegger/nvim-dap-python",
+		config = function()
+			require("dap-python").setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
 		end,
 	},
 }

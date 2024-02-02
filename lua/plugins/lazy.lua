@@ -4,7 +4,7 @@ return {
 		opts = {
 			colorscheme = "catppuccin",
 			defaults = {
-				-- lazy = true,
+				lazy = true,
 				keymaps = false,
 			},
 			checker = {
