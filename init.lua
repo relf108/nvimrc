@@ -70,6 +70,9 @@ vim.g.catppuccin_theme = {
 	},
 }
 
+vim.g.python3_host_prog = os.getenv("CONDA_PREFIX") .. "/bin/python"
+vim.g.python_host_prog = os.getenv("CONDA_PREFIX") .. "/bin/python"
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
