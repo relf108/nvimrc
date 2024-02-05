@@ -9,7 +9,7 @@ return {
 			})
 		end,
 	},
-  {
-    "nvim-neotest/neotest-python",
-  }
+	{
+		"nvim-neotest/neotest-python",
+	},
 }
