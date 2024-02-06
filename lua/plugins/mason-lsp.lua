@@ -38,7 +38,7 @@ return {
 					"jsonls",
 					"lua_ls",
 					"ruff_lsp",
-					"pyright",
+					"jedi_language_server",
 					"yamlls",
 					"typos_lsp",
 					"marksman",
@@ -61,18 +61,6 @@ return {
 							Lua = {
 								diagnostics = {
 									globals = { "vim" },
-								},
-							},
-						},
-					})
-				end,
-				["pyright"] = function() -- handler for pyright
-					require("lspconfig")["pyright"].setup({
-						capabilities = capabilities,
-						settings = {
-							python = {
-								analysis = {
-									diagnosticMode = "workspace",
 								},
 							},
 						},
