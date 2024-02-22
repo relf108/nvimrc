@@ -1,9 +1,31 @@
 return {
 	{
+		"jay-babu/mason-nvim-dap.nvim",
+		config = function()
+			vim.keymap.set("n", "<Leader>mr", function()
+				vim.cmd("Lazy reload mason-nvim-dap.nvim")
+			end)
+			require("mason-nvim-dap").setup({
+				ensure_installed = { "bash", "dart" },
+				handlers = {
+					function(config)
+						require("mason-nvim-dap").default_setup(config)
+					end,
+				},
+			})
+		end,
+	},
+	{
+		"mfussenegger/nvim-dap-python",
+		ft = { "python" },
+		config = function()
+			require("dap-python").setup(vim.g.python_path())
+		end,
+	},
+	{
 		"mfussenegger/nvim-dap",
 		config = function()
-			local dap = require("dap")
-			local function pytest_env()
+			local function pytest_conf()
 				if not vim.g.file_exists(".vscode/launch.json") then
 					return {}
 				end
@@ -11,7 +33,7 @@ return {
 				local configs = require("json"):decode(file:read("*all"))["configurations"]
 				for _, config in pairs(configs) do
 					if config["module"] == "pytest" then
-						return config["env"]
+						return config
 					end
 				end
 			end
@@ -62,31 +84,13 @@ return {
 			end)
 
 			vim.keymap.set("n", "<leader>tf", function()
-				require("neotest").run.run({ vim.fn.expand("%"), strategy = "dap", env = pytest_env() })
+				local config = pytest_conf()
+				require("neotest").run.run({
+					strategy = "dap",
+					env = config["env"],
+					args = config["args"],
+				})
 			end)
-		end,
-	},
-	{
-		"jay-babu/mason-nvim-dap.nvim",
-		config = function()
-			vim.keymap.set("n", "<Leader>mr", function()
-				vim.cmd("Lazy reload mason-nvim-dap.nvim")
-			end)
-			require("mason-nvim-dap").setup({
-				ensure_installed = { "bash", "dart" },
-				handlers = {
-					function(config)
-						require("mason-nvim-dap").default_setup(config)
-					end,
-				},
-			})
-		end,
-	},
-	{
-		"mfussenegger/nvim-dap-python",
-		ft = { "python" },
-		config = function()
-			require("dap-python").setup(os.getenv("CONDA_PREFIX") .. "/bin/python")
 		end,
 	},
 }

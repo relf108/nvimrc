@@ -39,10 +39,10 @@ return {
 					"lua_ls",
 					"ruff_lsp",
 					"jedi_language_server",
-					"yamlls",
 					"typos_lsp",
 					"marksman",
 					"bashls",
+					"yamlls",
 				},
 			})
 			require("mason-lspconfig").setup_handlers({

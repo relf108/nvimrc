@@ -70,8 +70,17 @@ vim.g.catppuccin_theme = {
 	},
 }
 
-vim.g.python3_host_prog = os.getenv("CONDA_PREFIX") .. "/bin/python"
-vim.g.python_host_prog = os.getenv("CONDA_PREFIX") .. "/bin/python"
+function vim.g.python_path()
+	local conda = os.getenv("CONDA_PREFIX")
+	if conda then
+		return conda .. "/bin/python"
+	else
+		return vim.fn.exepath("python")
+	end
+end
+
+vim.g.python3_host_prog = vim.g.python_path()
+vim.g.python_host_prog = vim.g.python_path()
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -100,3 +109,10 @@ function vim.g.file_exists(file)
 end
 
 require("dap.ext.vscode").load_launchjs()
+
+vim.keymap.set("n", "tt", ":tabnew<cr>")
+vim.keymap.set("n", "td", ":tabclose<cr>")
+vim.keymap.set("n", "tk", ":tabnext<cr>")
+vim.keymap.set("n", "tj", ":tabprev<cr>")
+vim.keymap.set("n", "th", ":tabfirst<cr>")
+vim.keymap.set("n", "tl", ":tablast<cr>")
