@@ -110,6 +110,7 @@ end
 
 require("dap.ext.vscode").load_launchjs()
 
+-- Tab management
 vim.keymap.set("n", "tt", ":tabnew<cr>")
 vim.keymap.set("n", "td", ":tabclose<cr>")
 vim.keymap.set("n", "tk", ":tabnext<cr>")
