@@ -2,7 +2,7 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
-			require("formatting.router")
+			local format = require("formatting.utils.format")
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
@@ -23,7 +23,7 @@ return {
 					vim.keymap.set({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts)
 					vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
 					vim.keymap.set("n", "<space>f", function()
-						vim.g.format()
+						format()
 					end, opts)
 				end,
 			})
