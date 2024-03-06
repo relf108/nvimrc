@@ -37,12 +37,12 @@ vim.g.mapleader = " "
 
 -- Toggle term (Need to be configured as globals)
 vim.g.floaterm_keymap_toggle = "<C-t>"
-vim.g.floaterm_keymap_new = "<Leader>tt"
-vim.g.floaterm_keymap_kill = "<Leader>td"
-vim.g.floaterm_keymap_next = "<Leader>tk"
-vim.g.floaterm_keymap_prev = "<Leader>tj"
-vim.g.floaterm_keymap_first = "<Leader>th"
-vim.g.floaterm_keymap_last = "<Leader>tl"
+vim.g.floaterm_keymap_new = "TT"
+vim.g.floaterm_keymap_kill = "TD"
+vim.g.floaterm_keymap_next = "TK"
+vim.g.floaterm_keymap_prev = "TJ"
+vim.g.floaterm_keymap_first = "TH"
+vim.g.floaterm_keymap_last = "TL"
 
 -- Theme config - matches catppuccino-mocha
 vim.g.colors = {
