@@ -10,12 +10,16 @@ local format_overrides = {
 	lua = lua,
 	md = markdown,
 	markdown = markdown,
-	py = python,
-	python = python,
 }
 
 return function()
 	local filetype = vim.bo.filetype
+
+	if string.find(vim.api.nvim_buf_get_name(0), "/Users/tsutton/Origin") then
+		format_overrides["python"] = python
+		format_overrides["py"] = python
+	end
+
 	if (format_overrides[filetype] or nil) ~= nil then
 		vim.cmd("w!")
 		format_overrides[filetype]():start()
