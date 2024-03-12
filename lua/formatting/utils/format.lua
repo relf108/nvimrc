@@ -22,7 +22,10 @@ return function()
 
 	if (format_overrides[filetype] or nil) ~= nil then
 		vim.cmd("w!")
-		format_overrides[filetype]():start()
+		local jobs = format_overrides[filetype]()
+		for _, job in ipairs(jobs) do
+			job:start()
+		end
 	else
 		vim.lsp.buf.format({ async = true })
 	end
