@@ -1,13 +1,13 @@
 local sql = require("formatting.sql")
 local lua = require("formatting.lua")
-local markdown = require("formatting.markdown")
+local md = require("formatting.md")
 
 local format_overrides = {
 	sql = sql,
 	plsql = sql,
 	mysql = sql,
 	lua = lua,
-	md = markdown,
+	md = md,
 }
 
 return function()

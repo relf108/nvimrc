@@ -41,7 +41,6 @@ return {
 					"ruff_lsp",
 					"jedi_language_server",
 					"typos_lsp",
-					"marksman",
 					"bashls",
 					"yamlls",
 				},
