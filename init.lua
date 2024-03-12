@@ -88,6 +88,8 @@ end
 vim.g.python3_host_prog = vim.g.python_path()
 vim.g.python_host_prog = vim.g.python_path()
 
+vim.g.work_dir = os.getenv("WORK_DIR") or os.getenv("HOME")
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({

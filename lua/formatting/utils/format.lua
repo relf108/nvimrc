@@ -15,7 +15,7 @@ local format_overrides = {
 return function()
 	local filetype = vim.bo.filetype
 
-	if string.find(vim.api.nvim_buf_get_name(0), "/Users/tsutton/Origin") then
+	if string.find(vim.api.nvim_buf_get_name(0), vim.g.work_dir) then
 		format_overrides["python"] = python
 		format_overrides["py"] = python
 	end
