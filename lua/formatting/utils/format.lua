@@ -8,6 +8,7 @@ local format_overrides = {
 	mysql = sql,
 	lua = lua,
 	md = md,
+  markdown = md,
 }
 
 return function()
