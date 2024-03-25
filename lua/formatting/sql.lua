@@ -4,8 +4,8 @@ local on_exit = require("formatting.utils.format_exit")
 return function()
 	return {
 		job:new({
-			command = "sqlfmt",
-			args = { vim.api.nvim_buf_get_name(0) },
+			command = "sqlfluff",
+			args = { "format", "-p", "0", vim.api.nvim_buf_get_name(0) },
 			on_exit = on_exit,
 		}),
 	}
