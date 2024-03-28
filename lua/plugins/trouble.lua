@@ -11,6 +11,9 @@ return {
 			vim.keymap.set("n", "<leader>dd", function()
 				require("trouble").toggle({ mode = "document_diagnostics" })
 			end)
+			vim.keymap.set("n", "<leader>dw", function()
+				require("trouble").toggle({ mode = "workspace_diagnostics" })
+			end)
 		end,
 	},
 }
