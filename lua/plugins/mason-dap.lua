@@ -2,11 +2,8 @@ return {
 	{
 		"jay-babu/mason-nvim-dap.nvim",
 		config = function()
-			vim.keymap.set("n", "<Leader>mr", function()
-				vim.cmd("Lazy reload mason-nvim-dap.nvim")
-			end)
 			require("mason-nvim-dap").setup({
-				ensure_installed = { "bash", "dart" },
+				ensure_installed = { "bash", "dart", "codelldb" },
 				handlers = {
 					function(config)
 						require("mason-nvim-dap").default_setup(config)
@@ -25,6 +22,7 @@ return {
 	{
 		"mfussenegger/nvim-dap",
 		config = function()
+			require("dap.ext.vscode").load_launchjs()
 			local function pytest_conf()
 				if not vim.g.file_exists(".vscode/launch.json") then
 					return {}

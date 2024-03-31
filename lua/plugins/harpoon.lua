@@ -1,11 +1,3 @@
-local function tablelength(T)
-	local count = 0
-	for _ in pairs(T) do
-		count = count + 1
-	end
-	return count
-end
-
 local buff = 0
 local curr_buff = vim.api.nvim_buf_get_name(0)
 
@@ -27,18 +19,26 @@ return {
 
 			-- Toggle previous & next buffers stored within Harpoon list
 			vim.keymap.set("n", "<C-h>", function()
+				if harpoon:list():length() == 0 then
+					return
+				end
+
 				curr_buff = vim.api.nvim_buf_get_name(0)
 				buff = buff - 1
 
 				harpoon:list():select(buff)
 
 				if curr_buff == vim.api.nvim_buf_get_name(0) then
-					buff = tablelength(harpoon:list()) - 1
+					buff = harpoon:list():length()
 					harpoon:list():select(buff)
 				end
 			end)
 
 			vim.keymap.set("n", "<C-l>", function()
+				if harpoon:list():length() == 0 then
+					return
+				end
+
 				curr_buff = vim.api.nvim_buf_get_name(0)
 				buff = buff + 1
 
