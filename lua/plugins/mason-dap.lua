@@ -1,3 +1,4 @@
+local load_launchjs = require("functions.load-launch-json")
 return {
 	{
 		"jay-babu/mason-nvim-dap.nvim",
@@ -22,12 +23,17 @@ return {
 	{
 		"mfussenegger/nvim-dap",
 		config = function()
-			require("dap.ext.vscode").load_launchjs()
+			load_launchjs()
 			local function pytest_conf()
 				if not vim.g.file_exists(".vscode/launch.json") then
 					return {}
 				end
+
 				local file = io.open(".vscode/launch.json", "r")
+				if not file then
+					return {}
+				end
+
 				local configs = require("json"):decode(file:read("*all"))["configurations"]
 				for _, config in pairs(configs) do
 					if config["module"] == "pytest" then

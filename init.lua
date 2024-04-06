@@ -90,6 +90,14 @@ vim.g.python_host_prog = vim.g.python_path()
 
 vim.g.work_dir = os.getenv("WORK_DIR") or os.getenv("HOME")
 
+function vim.g.file_exists(file)
+	local f = io.open(file, "rb")
+	if f then
+		f:close()
+	end
+	return f ~= nil
+end
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
@@ -107,14 +115,6 @@ require("lazy").setup("plugins")
 
 vim.g.completion_matching_strategy_list = { "exact", "substring" }
 vim.g.completion_matching_ignore_case = 1
-
-function vim.g.file_exists(file)
-	local f = io.open(file, "rb")
-	if f then
-		f:close()
-	end
-	return f ~= nil
-end
 
 -- Tab management
 vim.keymap.set("n", "tt", ":tabnew<cr>")
