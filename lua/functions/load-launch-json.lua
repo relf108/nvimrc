@@ -1,9 +1,8 @@
 return function()
-	if not vim.g.file_exists(".vscode/launch.json") then
+	if not vim.fn.filereadable(".vscode/launch.json") then
 		return
 	end
-
-	local ok, err = pcall(require("dap.ext.vscode").load_launchjs)
+	local ok, err = pcall(require("dap.ext.vscode").load_launchjs, nil, { codelldb = { "rust" }, lldb = { "rust" } })
 	if not ok then
 		local charnum = ""
 		err = err:gsub(".", function(c)

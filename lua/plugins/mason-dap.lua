@@ -23,7 +23,6 @@ return {
 	{
 		"mfussenegger/nvim-dap",
 		config = function()
-			load_launchjs()
 			local function pytest_conf()
 				if not vim.g.file_exists(".vscode/launch.json") then
 					return {}
@@ -43,6 +42,7 @@ return {
 			end
 
 			vim.keymap.set("n", "<F5>", function()
+        load_launchjs()
 				require("dap").continue()
 			end)
 			vim.keymap.set("n", "<F10>", function()
