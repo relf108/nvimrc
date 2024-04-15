@@ -1,7 +1,9 @@
 return function(_, return_val)
+	vim.schedule(function()
+		vim.api.nvim_buf_set_option(vim.g.get_buf_by_name(vim.g.formatting_buf_name), "readonly", false)
+	end)
 	if return_val == 0 then
 		vim.schedule(function()
-			vim.api.nvim_buf_set_option(vim.g.get_buf_by_name(vim.g.formatting_buf_name), "readonly", false)
 			vim.notify("Exit code: 0", vim.log.levels.INFO, {
 				title = "Formatter override successful.",
 			})
@@ -15,7 +17,4 @@ return function(_, return_val)
 			vim.lsp.buf.format({ async = true })
 		end)
 	end
-	-- vim.schedule(function()
-	-- 	vim.g.formatting_buf_name = ""
-	-- end)
 end
