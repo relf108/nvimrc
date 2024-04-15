@@ -5,7 +5,7 @@ return function(_, return_val)
 			vim.notify("Exit code: 0", vim.log.levels.INFO, {
 				title = "Formatter override successful.",
 			})
-			vim.cmd(":e!" .. vim.g.formatting_buf_name)
+			vim.cmd(":drop " .. vim.g.formatting_buf_name)
 		end)
 	else
 		vim.schedule(function()
@@ -15,7 +15,7 @@ return function(_, return_val)
 			vim.lsp.buf.format({ async = true })
 		end)
 	end
-	vim.schedule(function()
-		vim.g.formatting_buf_name = ""
-	end)
+	-- vim.schedule(function()
+	-- 	vim.g.formatting_buf_name = ""
+	-- end)
 end
