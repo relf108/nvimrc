@@ -1,6 +1,7 @@
 return function(_, return_val)
 	if return_val == 0 then
 		vim.schedule(function()
+			vim.api.nvim_buf_set_option(0, "readonly", false)
 			vim.notify("Exit code: 0", vim.log.levels.INFO, {
 				title = "Formatter override successful.",
 			})

@@ -21,9 +21,10 @@ return function()
 	end
 
 	if (format_overrides[filetype] or nil) ~= nil then
-		vim.cmd("w!")
+		vim.cmd("silent! w!")
 		local jobs = format_overrides[filetype]()
 		for _, job in ipairs(jobs) do
+			vim.api.nvim_buf_set_option(0, "readonly", true)
 			job:start()
 		end
 	else
