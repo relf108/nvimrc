@@ -5,7 +5,7 @@ return function()
 	return {
 		job:new({
 			command = "prettier",
-			args = { "-w", vim.api.nvim_buf_get_name(0) },
+			args = { "-w", vim.g.formatting_buf_name },
 			on_exit = on_exit,
 		}),
 	}

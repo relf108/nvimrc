@@ -5,7 +5,7 @@ return function()
 	return {
 		job:new({
 			command = "stylua",
-			args = { vim.api.nvim_buf_get_name(0) },
+			args = { vim.g.formatting_buf_name },
 			on_exit = on_exit,
 		}),
 	}

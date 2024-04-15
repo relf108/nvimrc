@@ -76,6 +76,15 @@ vim.g.catppuccin_theme = {
 	},
 }
 
+function vim.g.get_buf_by_name(name)
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_get_name(buf) == name then
+			return buf
+		end
+	end
+	return 0
+end
+
 function vim.g.python_path()
 	local conda = os.getenv("CONDA_PREFIX")
 	if conda then

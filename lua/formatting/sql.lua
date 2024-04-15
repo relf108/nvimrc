@@ -5,7 +5,7 @@ return function()
 	return {
 		job:new({
 			command = "sqlfluff",
-			args = { "format", "-d", "postgres", "-p", "0", vim.api.nvim_buf_get_name(0) },
+			args = { "format", "-d", "postgres", "-p", "0", vim.g.formatting_buf_name },
 			on_exit = on_exit,
 		}),
 	}
