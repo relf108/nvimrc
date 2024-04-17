@@ -18,6 +18,8 @@ return {
 					"markdown",
 					"markdown_inline",
 					"sql",
+					"go",
+					"rust",
 				},
 				sync_install = true,
 				ignore_install = { "javascript" },

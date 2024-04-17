@@ -4,7 +4,7 @@ return {
 		"jay-babu/mason-nvim-dap.nvim",
 		config = function()
 			require("mason-nvim-dap").setup({
-				ensure_installed = { "bash", "dart", "codelldb" },
+				ensure_installed = { "bash", "dart", "codelldb", "delve" },
 				handlers = {
 					function(config)
 						require("mason-nvim-dap").default_setup(config)
@@ -42,7 +42,7 @@ return {
 			end
 
 			vim.keymap.set("n", "<F5>", function()
-        load_launchjs()
+				load_launchjs()
 				require("dap").continue()
 			end)
 			vim.keymap.set("n", "<F10>", function()

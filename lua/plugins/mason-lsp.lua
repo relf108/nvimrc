@@ -43,6 +43,8 @@ return {
 					"typos_lsp",
 					"bashls",
 					"yamlls",
+					"rust_analyzer",
+					"gopls",
 				},
 			})
 			require("mason-lspconfig").setup_handlers({
