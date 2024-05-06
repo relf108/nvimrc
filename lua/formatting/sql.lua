@@ -4,8 +4,8 @@ local on_exit = require("formatting.utils.format_exit")
 return function()
 	return {
 		job:new({
-			command = "sqlfluff",
-			args = { "format", "-d", "postgres", "-p", "0", vim.g.formatting_buf_name },
+			command = "sleek",
+			args = { vim.g.formatting_buf_name },
 			on_exit = on_exit,
 		}),
 	}
