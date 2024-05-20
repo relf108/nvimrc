@@ -3,6 +3,10 @@ return {
 		"neovim/nvim-lspconfig",
 		config = function()
 			local format = require("formatting.utils.format")
+      --
+      -- Python lsp config
+      require("lsp.python")
+
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
@@ -30,61 +34,61 @@ return {
 		end,
 	},
 
-	{
-		"williamboman/mason-lspconfig.nvim",
-		config = function()
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
-			require("mason-lspconfig").setup({
-				ensure_installed = {
-					"jsonls",
-					"lua_ls",
-					"ruff_lsp",
-					"jedi_language_server",
-					"typos_lsp",
-					"bashls",
-					"yamlls",
-					"rust_analyzer",
-					"gopls",
-				},
-			})
-			require("mason-lspconfig").setup_handlers({
-				-- The first entry (without a key) will be the default handler
-				-- and will be called for each installed server that doesn't have
-				-- a dedicated handler.
-				function(server_name) -- default handler (optional)
-					require("lspconfig")[server_name].setup({
-						capabilities = capabilities,
-					})
-				end,
-				["lua_ls"] = function(server_name) -- handler for lua_ls
-					require("lspconfig")[server_name].setup({
-						capabilities = capabilities,
-						settings = {
-							Lua = {
-								diagnostics = {
-									globals = { "vim" },
-								},
-							},
-						},
-					})
-				end,
-				["ruff_lsp"] = function(server_name) -- handler for ruff_lsp
-					local ruff_conf = vim.fn.expand("~/.config/ruff/ruff.toml")
-					require("lspconfig")[server_name].setup({
-						capabilities = capabilities,
-						on_attach = function(client)
-							client.server_capabilities.hoverProvider = false
-						end,
-						init_options = {
-							settings = {
-								args = {
-									"--config=" .. ruff_conf,
-								},
-							},
-						},
-					})
-				end,
-			})
-		end,
-	},
+	-- {
+	-- 	"williamboman/mason-lspconfig.nvim",
+	-- 	config = function()
+	-- 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
+	-- 		require("mason-lspconfig").setup({
+	-- 			ensure_installed = {
+	-- 				"jsonls",
+	-- 				"lua_ls",
+	-- 				"ruff_lsp",
+	-- 				"jedi_language_server",
+	-- 				"typos_lsp",
+	-- 				"bashls",
+	-- 				"yamlls",
+	-- 				"rust_analyzer",
+	-- 				"gopls",
+	-- 			},
+	-- 		})
+	-- 		require("mason-lspconfig").setup_handlers({
+	-- 			-- The first entry (without a key) will be the default handler
+	-- 			-- and will be called for each installed server that doesn't have
+	-- 			-- a dedicated handler.
+	-- 			function(server_name) -- default handler (optional)
+	-- 				require("lspconfig")[server_name].setup({
+	-- 					capabilities = capabilities,
+	-- 				})
+	-- 			end,
+	-- 			["lua_ls"] = function(server_name) -- handler for lua_ls
+	-- 				require("lspconfig")[server_name].setup({
+	-- 					capabilities = capabilities,
+	-- 					settings = {
+	-- 						Lua = {
+	-- 							diagnostics = {
+	-- 								globals = { "vim" },
+	-- 							},
+	-- 						},
+	-- 					},
+	-- 				})
+	-- 			end,
+	-- 			["ruff_lsp"] = function(server_name) -- handler for ruff_lsp
+	-- 				local ruff_conf = vim.fn.expand("~/.config/ruff/ruff.toml")
+	-- 				require("lspconfig")[server_name].setup({
+	-- 					capabilities = capabilities,
+	-- 					on_attach = function(client)
+	-- 						client.server_capabilities.hoverProvider = false
+	-- 					end,
+	-- 					init_options = {
+	-- 						settings = {
+	-- 							args = {
+	-- 								"--config=" .. ruff_conf,
+	-- 							},
+	-- 						},
+	-- 					},
+	-- 				})
+	-- 			end,
+	-- 		})
+	-- 	end,
+	-- },
 }
