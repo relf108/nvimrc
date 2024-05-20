@@ -1,18 +1,5 @@
 local load_launchjs = require("functions.load-launch-json")
 return {
-	-- {
-	-- 	"jay-babu/mason-nvim-dap.nvim",
-	-- 	config = function()
-	-- 		require("mason-nvim-dap").setup({
-	-- 			ensure_installed = { "bash", "dart", "codelldb", "delve" },
-	-- 			handlers = {
-	-- 				function(config)
-	-- 					require("mason-nvim-dap").default_setup(config)
-	-- 				end,
-	-- 			},
-	-- 		})
-	-- 	end,
-	-- },
 	{
 		"mfussenegger/nvim-dap-python",
 		ft = { "python" },
