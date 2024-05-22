@@ -7,6 +7,7 @@ return {
 			--LSP config by language
 			require("lsp.python")
 			require("lsp.lua")
+			require("lsp.dart")
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),

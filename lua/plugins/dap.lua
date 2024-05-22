@@ -1,3 +1,4 @@
+-- TODO @suttont: Move lang specific dap configs into their own files under /lua/dap
 local load_launchjs = require("functions.load-launch-json")
 return {
 	{
@@ -27,6 +28,12 @@ return {
 					end
 				end
 			end
+
+			require("dap").adapters.dart = {
+				type = "executable",
+				command = "flutter",
+				args = { "debug_adapter" },
+			}
 
 			vim.keymap.set("n", "<F5>", function()
 				load_launchjs()
