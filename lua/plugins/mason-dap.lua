@@ -33,7 +33,7 @@ return {
 					return {}
 				end
 
-				local configs = require("json"):decode(file:read("*all"))["configurations"]
+				local configs = vim.json.decode(file:read("*all"))["configurations"]
 				for _, config in pairs(configs) do
 					if config["module"] == "pytest" then
 						return config
