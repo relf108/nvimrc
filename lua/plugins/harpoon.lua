@@ -1,5 +1,4 @@
 local buff = 0
-local curr_buff = vim.api.nvim_buf_get_name(0)
 
 return {
 	{
@@ -12,6 +11,7 @@ return {
 			harpoon.setup()
 			vim.keymap.set("n", "<leader>a", function()
 				harpoon:list():add()
+				buff = harpoon:list():length()
 			end)
 			vim.keymap.set("n", "<C-e>", function()
 				harpoon.ui:toggle_quick_menu(harpoon:list())
@@ -23,12 +23,12 @@ return {
 					return
 				end
 
-				curr_buff = vim.api.nvim_buf_get_name(0)
 				buff = buff - 1
 
 				harpoon:list():select(buff)
 
-				if curr_buff == vim.api.nvim_buf_get_name(0) then
+				-- Circle back to the last buffer if the first buffer is reached
+				if buff < 1 then
 					buff = harpoon:list():length()
 					harpoon:list():select(buff)
 				end
@@ -39,12 +39,11 @@ return {
 					return
 				end
 
-				curr_buff = vim.api.nvim_buf_get_name(0)
 				buff = buff + 1
-
 				harpoon:list():select(buff)
 
-				if curr_buff == vim.api.nvim_buf_get_name(0) then
+				-- Circle back to the first buffer if the last buffer is reached
+				if buff > harpoon:list():length() then
 					buff = 1
 					harpoon:list():select(buff)
 				end
