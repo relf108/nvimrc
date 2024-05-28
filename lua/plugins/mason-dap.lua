@@ -93,6 +93,7 @@ return {
 					strategy = "dap",
 					env = config["env"],
 					args = config["args"],
+					console = "integratedTerminal",
 				})
 			end)
 		end,

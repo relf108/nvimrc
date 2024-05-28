@@ -2,6 +2,8 @@ local sql = require("formatting.sql")
 local lua = require("formatting.lua")
 local markdown = require("formatting.markdown")
 local python = require("formatting.python")
+local bash = require("formatting.bash")
+local yaml = require("formatting.yaml")
 
 vim.g.formatting_buf_name = ""
 
@@ -12,6 +14,10 @@ local format_overrides = {
 	lua = lua,
 	md = markdown,
 	markdown = markdown,
+	bash = bash,
+	sh = bash,
+	yaml = yaml,
+	yml = yaml,
 }
 
 return function()
