@@ -1,6 +1,2 @@
 neovim >= latest
-pyright >= latest
 debugpy >= latest
-pylint >= latest
-flake8 >= latest
-black >= latest
