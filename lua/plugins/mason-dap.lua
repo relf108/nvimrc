@@ -1,4 +1,3 @@
-local load_launchjs = require("functions.load-launch-json")
 return {
 	{
 		"jay-babu/mason-nvim-dap.nvim",
@@ -42,7 +41,7 @@ return {
 			end
 
 			vim.keymap.set("n", "<F5>", function()
-				load_launchjs()
+        require("functions.load-launch-json")
 				require("dap").continue()
 			end)
 			vim.keymap.set("n", "<F10>", function()
