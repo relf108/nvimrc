@@ -1,5 +1,4 @@
 -- TODO @suttont: Move lang specific dap configs into their own files under /lua/dap
-local load_launchjs = require("functions.load-launch-json")
 return {
 	{
 		"mfussenegger/nvim-dap-python",
@@ -36,7 +35,7 @@ return {
 			}
 
 			vim.keymap.set("n", "<F5>", function()
-				load_launchjs()
+				require("functions.load-launch-json")
 				require("dap").continue()
 			end)
 			vim.keymap.set("n", "<F10>", function()
