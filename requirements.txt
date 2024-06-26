@@ -1,2 +1,9 @@
+# Neovim
 neovim >= latest
+
+# DAP
 debugpy >= latest
+
+# LSP
+ruff-lsp >= latest
+jedi-language-server >= latest
