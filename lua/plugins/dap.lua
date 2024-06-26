@@ -1,12 +1,9 @@
 -- TODO @suttont: Move lang specific dap configs into their own files under /lua/dap
+local dap_adapters = {
+  dart = require("dap.dart"),
+  python = require("dap.python"),
+}
 return {
-	{
-		"mfussenegger/nvim-dap-python",
-		ft = { "python" },
-		config = function()
-			require("dap-python").setup(vim.g.python_path())
-		end,
-	},
 	{
 		"mfussenegger/nvim-dap",
 		config = function()
@@ -28,11 +25,10 @@ return {
 				end
 			end
 
-			require("dap").adapters.dart = {
-				type = "executable",
-				command = "flutter",
-				args = { "debug_adapter" },
-			}
+      -- Dap configs 
+      for lang, adapter in pairs(dap_adapters) do
+        require("dap").adapters[lang] = adapter
+      end
 
 			vim.keymap.set("n", "<F5>", function()
 				require("functions.load-launch-json")
