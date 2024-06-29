@@ -1,6 +1,6 @@
 local dap_adapters = {
-  dart = require("dap.dart"),
-  python = require("dap.python"),
+	dart = require("dap.dart"),
+	python = require("dap.python"),
 }
 return {
 	{
@@ -24,10 +24,10 @@ return {
 				end
 			end
 
-      -- Dap configs 
-      for lang, adapter in pairs(dap_adapters) do
-        require("dap").adapters[lang] = adapter
-      end
+			-- Dap configs
+			for lang, adapter in pairs(dap_adapters) do
+				require("dap").adapters[lang] = adapter
+			end
 
 			vim.keymap.set("n", "<F5>", function()
 				require("functions.load-launch-json")
