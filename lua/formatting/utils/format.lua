@@ -4,6 +4,8 @@ local markdown = require("formatting.markdown")
 local python = require("formatting.python")
 local bash = require("formatting.bash")
 local yaml = require("formatting.yaml")
+local json = require("formatting.json")
+local nix = require("formatting.nix")
 
 vim.g.formatting_buf_name = ""
 
@@ -18,6 +20,8 @@ local format_overrides = {
 	sh = bash,
 	yaml = yaml,
 	yml = yaml,
+	json = json,
+	nix = nix,
 }
 
 return function()

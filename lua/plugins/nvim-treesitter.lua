@@ -16,6 +16,7 @@ return {
 					"regex",
 					"bash",
 					"markdown",
+					"json",
 					"markdown_inline",
 					"sql",
 					"go",
