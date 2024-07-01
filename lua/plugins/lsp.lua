@@ -5,6 +5,7 @@ return {
 			--LSP config by language
 			require("lsp.python")
 			require("lsp.lua")
+			require("lsp.json")
 
 			local format = require("formatting.utils.format")
 
