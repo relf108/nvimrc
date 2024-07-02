@@ -2,6 +2,10 @@
 vim.opt.relativenumber = true
 vim.opt.number = true
 
+-- Enable spellcheck
+vim.opt.spelllang = "en_au"
+vim.opt.spell = true
+
 -- Set terminal to 24-bit color
 vim.opt.termguicolors = true
 
