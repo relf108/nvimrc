@@ -6,6 +6,7 @@ return {
 			require("lsp.python")
 			require("lsp.lua")
 			require("lsp.json")
+			require("lsp.markdown")
 
 			local format = require("formatting.utils.format")
 
