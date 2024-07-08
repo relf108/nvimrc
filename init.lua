@@ -131,10 +131,15 @@ require("lazy").setup("plugins")
 vim.g.completion_matching_strategy_list = { "exact", "substring" }
 vim.g.completion_matching_ignore_case = 1
 
+local cmdrepreat = require("functions.cmd-repeat")
 -- Tab management
 vim.keymap.set("n", "tt", ":tabnew<cr>")
 vim.keymap.set("n", "td", ":tabclose<cr>")
-vim.keymap.set("n", "tk", ":tabnext<cr>")
-vim.keymap.set("n", "tj", ":tabprev<cr>")
+vim.keymap.set("n", "tk", function()
+	return cmdrepreat(":tabnext")
+end)
+vim.keymap.set("n", "tj", function()
+	return cmdrepreat(":tabprevious")
+end)
 vim.keymap.set("n", "th", ":tabfirst<cr>")
 vim.keymap.set("n", "tl", ":tablast<cr>")
