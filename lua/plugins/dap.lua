@@ -30,8 +30,7 @@ return {
 			end
 
 			vim.keymap.set("n", "<F5>", function()
-				require("functions.load-launch-json")
-				require("dap").continue()
+				require("functions.dap-continue-with-validation")()
 			end)
 			vim.keymap.set("n", "<F10>", function()
 				require("dap").step_over()
