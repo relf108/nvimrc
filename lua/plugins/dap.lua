@@ -83,6 +83,10 @@ return {
 					console = "integratedTerminal",
 				})
 			end)
+
+			vim.keymap.set("n", "<leader>vs", function()
+				vim.cmd(":drop .vscode/launch.json")
+			end)
 		end,
 	},
 }
