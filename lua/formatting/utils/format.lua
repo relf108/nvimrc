@@ -5,6 +5,7 @@ local python = require("formatting.python")
 local bash = require("formatting.bash")
 local yaml = require("formatting.yaml")
 local nix = require("formatting.nix")
+local xml = require("formatting.xml")
 
 vim.g.formatting_buf_name = ""
 
@@ -20,6 +21,7 @@ local format_overrides = {
 	yaml = yaml,
 	yml = yaml,
 	nix = nix,
+	xml = xml,
 }
 
 return function()
