@@ -101,7 +101,7 @@ end
 vim.g.python3_host_prog = vim.g.python_path()
 vim.g.python_host_prog = vim.g.python_path()
 
-vim.g.work_dir = os.getenv("WORK_DIR") or os.getenv("HOME")
+vim.g.work_dir = os.getenv("WORK_DIR") or "/tmp"
 
 function vim.g.file_exists(file)
 	local f = io.open(file, "rb")
