@@ -5,7 +5,9 @@ return function(_, return_val)
 	if return_val == 0 then
 		vim.schedule(function()
 			vim.notify("Exit code: 0", vim.log.levels.INFO, {
-				title = "Formatter override successful.",
+				title = "Formatted "
+					.. vim.api.nvim_buf_get_option(vim.g.get_buf_by_name(vim.g.formatting_buf_name), "filetype")
+					.. " file.",
 			})
 			vim.cmd(":drop " .. vim.g.formatting_buf_name)
 		end)

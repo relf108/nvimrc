@@ -38,9 +38,6 @@ return function()
 		local jobs = format_overrides[filetype]()
 		for _, job in ipairs(jobs) do
 			vim.api.nvim_buf_set_option(vim.g.get_buf_by_name(vim.g.formatting_buf_name), "readonly", true)
-			vim.notify("Buffer temporarily set to readonly.", vim.log.levels.WARN, {
-				title = "Formatting " .. filetype .. "...",
-			})
 			job:start()
 		end
 	else
