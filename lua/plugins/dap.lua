@@ -6,24 +6,6 @@ return {
 	{
 		"mfussenegger/nvim-dap",
 		config = function()
-			local function pytest_conf()
-				if not vim.g.file_exists(".vscode/launch.json") then
-					return {}
-				end
-
-				local file = io.open(".vscode/launch.json", "r")
-				if not file then
-					return {}
-				end
-
-				local configs = vim.json.decode(file:read("*all"))["configurations"]
-				for _, config in pairs(configs) do
-					if config["module"] == "pytest" then
-						return config
-					end
-				end
-			end
-
 			-- Dap configs
 			for lang, adapter in pairs(dap_adapters) do
 				require("dap").adapters[lang] = adapter
@@ -75,13 +57,7 @@ return {
 			end)
 
 			vim.keymap.set("n", "<leader>tf", function()
-				local config = pytest_conf()
-				require("neotest").run.run({
-					strategy = "dap",
-					env = config["env"],
-					args = config["args"],
-					console = "integratedTerminal",
-				})
+				require("neotest").run.run()
 			end)
 
 			vim.keymap.set("n", "<leader>vs", function()
