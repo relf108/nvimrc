@@ -3,7 +3,3 @@ neovim
 
 # DAP
 debugpy
-
-# LSP
-ruff-lsp
-jedi-language-server
