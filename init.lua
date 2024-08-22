@@ -128,6 +128,8 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("plugins")
 
+vim.keymap.set("n", "<leader>f", require("formatting.utils.format"), { noremap = true })
+
 vim.g.completion_matching_strategy_list = { "exact", "substring" }
 vim.g.completion_matching_ignore_case = 1
 
