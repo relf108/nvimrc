@@ -6,4 +6,4 @@ debugpy
 
 # LSP
 ruff-lsp
-jedi-language-server
+pyright
