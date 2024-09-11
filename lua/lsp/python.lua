@@ -1,7 +1,7 @@
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 local ruff_conf = vim.fn.expand("~/.config/ruff/ruff.toml")
 
-require("lspconfig").ruff_lsp.setup({
+require("lspconfig").ruff.setup({
 	capabilities = capabilities,
 	on_attach = function(client)
 		client.server_capabilities.hoverProvider = false
@@ -15,18 +15,22 @@ require("lspconfig").ruff_lsp.setup({
 	},
 })
 
-require("lspconfig").pyright.setup({
+require("lspconfig").jedi_language_server.setup({
 	capabilities = capabilities,
-	settings = {
-		python = {
-			pythonPath = vim.g.python_path(),
-			analysis = {
-				autoSearchPaths = true,
-				useLibraryCodeForTypes = true,
-				diagnosticMode = "workspace",
-				typeCheckingMode = "standard",
-			},
-		},
-	},
 })
+--
+-- require("lspconfig").pyright.setup({
+-- 	capabilities = require("cmp_nvim_lsp").default_capabilities(),
+-- 	settings = {
+-- 		python = {
+-- 			pythonPath = vim.g.python_path(),
+-- 			analysis = {
+-- 				autoSearchPaths = true,
+-- 				useLibraryCodeForTypes = true,
+-- 				diagnosticMode = "workspace",
+-- 				typeCheckingMode = "standard",
+-- 			},
+-- 		},
+-- 	},
+-- })
 return
