@@ -15,22 +15,18 @@ require("lspconfig").ruff.setup({
 	},
 })
 
-require("lspconfig").jedi_language_server.setup({
+require("lspconfig").pyright.setup({
 	capabilities = capabilities,
+	settings = {
+		pyright = {
+			disableOrganizeImports = true,
+		},
+		python = {
+			pythonPath = vim.g.python_path(),
+			analysis = {
+				ignore = { "*" },
+			},
+		},
+	},
 })
---
--- require("lspconfig").pyright.setup({
--- 	capabilities = require("cmp_nvim_lsp").default_capabilities(),
--- 	settings = {
--- 		python = {
--- 			pythonPath = vim.g.python_path(),
--- 			analysis = {
--- 				autoSearchPaths = true,
--- 				useLibraryCodeForTypes = true,
--- 				diagnosticMode = "workspace",
--- 				typeCheckingMode = "standard",
--- 			},
--- 		},
--- 	},
--- })
 return

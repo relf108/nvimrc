@@ -28,6 +28,7 @@ return function()
 	vim.g.formatting_buf_name = vim.api.nvim_buf_get_name(0)
 	local filetype = vim.bo.filetype
 
+  -- Set specific formatter for a directory
 	if string.find(vim.g.formatting_buf_name, vim.g.work_dir) then
 		format_overrides["python"] = python
 		format_overrides["py"] = python
