@@ -6,6 +6,7 @@ local bash = require("formatting.bash")
 local yaml = require("formatting.yaml")
 local nix = require("formatting.nix")
 local xml = require("formatting.xml")
+local toml = require("formatting.toml")
 
 vim.g.formatting_buf_name = ""
 
@@ -22,13 +23,14 @@ local format_overrides = {
 	yml = yaml,
 	nix = nix,
 	xml = xml,
+	toml = toml,
 }
 
 return function()
 	vim.g.formatting_buf_name = vim.api.nvim_buf_get_name(0)
 	local filetype = vim.bo.filetype
 
-  -- Set specific formatter for a directory
+	-- Set specific formatter for a directory
 	if string.find(vim.g.formatting_buf_name, vim.g.work_dir) then
 		format_overrides["python"] = python
 		format_overrides["py"] = python
