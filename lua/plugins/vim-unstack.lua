@@ -1,3 +1,3 @@
 return {
-	"mattboehm/vim-unstack",
+	"mattboehm/vim-unstack"
 }
