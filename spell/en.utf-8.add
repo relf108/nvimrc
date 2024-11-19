@@ -12,3 +12,7 @@ Postgres
 setup
 API
 commitizen
+neovim
+plugin
+configurability
+extendable
