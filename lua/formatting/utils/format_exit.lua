@@ -16,6 +16,7 @@ return function(_, return_val)
 			vim.notify("Exit code: " .. return_val, vim.log.levels.WARN, {
 				title = "Formatter override failed, using LSP formatter.",
 			})
+			vim.cmd(":drop " .. vim.g.formatting_buf_name)
 			vim.lsp.buf.format({ async = true })
 		end)
 	end
