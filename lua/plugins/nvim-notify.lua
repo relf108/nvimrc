@@ -5,7 +5,7 @@ return {
 			vim.notify = require("notify").setup({
 				-- Animation style (see below for details)
 				stages = "fade_in_slide_out",
-				fps = 120,
+				fps = 60,
 
 				-- Default timeout for notifications
 				timeout = 5000,
