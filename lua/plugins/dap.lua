@@ -56,10 +56,6 @@ return {
 				widgets.centered_float(widgets.scopes)
 			end)
 
-			vim.keymap.set("n", "<leader>tf", function()
-				require("neotest").run.run()
-			end)
-
 			vim.keymap.set("n", "<leader>vs", function()
 				vim.cmd(":drop .vscode/launch.json")
 			end)
