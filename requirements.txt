@@ -5,5 +5,5 @@ neovim
 debugpy
 
 # LSP
-ruff-lsp
+ruff
 pyright
