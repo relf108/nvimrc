@@ -146,6 +146,8 @@ end)
 vim.keymap.set("n", "th", ":tabfirst<cr>")
 vim.keymap.set("n", "tl", ":tablast<cr>")
 
+vim.keymap.set("n", "<leader>dd", vim.diagnostic.setloclist)
+
 vim.keymap.set("n", "<leader>sn", function()
 	vim.cmd(":set relativenumber")
 	vim.cmd(":set number")
