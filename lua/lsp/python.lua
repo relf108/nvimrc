@@ -29,4 +29,13 @@ require("lspconfig").pyright.setup({
 		},
 	},
 })
+
+require("lspconfig").snyk_ls.setup({
+	capabilities = capabilities,
+	init_options = {
+		activateSnykCode = "true",
+		token = require("secrets.snyk").token,
+		organization = require("secrets.snyk").organization,
+	},
+})
 return
