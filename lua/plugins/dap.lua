@@ -59,6 +59,9 @@ return {
 			vim.keymap.set("n", "<leader>vs", function()
 				vim.cmd(":drop .vscode/launch.json")
 			end)
+			vim.keymap.set("n", "<leader>r", function()
+				vim.cmd(":drop requests")
+			end)
 		end,
 	},
 }
