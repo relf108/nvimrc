@@ -1,6 +1,5 @@
 local job = require("plenary.job")
 local on_exit = require("formatting.utils.format_exit")
-
 return function()
 	return {
 		job:new({

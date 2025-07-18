@@ -40,7 +40,7 @@ return function()
 		vim.cmd("silent! w!")
 		local jobs = format_overrides[filetype]()
 		for _, job in ipairs(jobs) do
-			vim.api.nvim_buf_set_option(vim.g.get_buf_by_name(vim.g.formatting_buf_name), "readonly", true)
+			vim.api.nvim_set_option_value("readonly", true, { buf = vim.g.get_buf_by_name(vim.g.formatting_buf_name) })
 			job:start()
 		end
 	else

@@ -1,4 +1,8 @@
+-- Define capabilities
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
+capabilities["general"] = { positionEncodings = { "utf-16" } }
+
+-- Ruff
 local ruff_conf = vim.fn.expand("~/.config/ruff/ruff.toml")
 
 require("lspconfig").ruff.setup({
@@ -15,6 +19,7 @@ require("lspconfig").ruff.setup({
 	},
 })
 
+-- Pyright
 require("lspconfig").pyright.setup({
 	capabilities = capabilities,
 	settings = {

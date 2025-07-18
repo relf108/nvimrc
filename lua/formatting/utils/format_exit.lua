@@ -1,13 +1,14 @@
 return function(_, return_val)
 	vim.schedule(function()
-		vim.api.nvim_buf_set_option(vim.g.get_buf_by_name(vim.g.formatting_buf_name), "readonly", false)
+		vim.api.nvim_set_option_value("readonly", false, { buf = vim.g.get_buf_by_name(vim.g.formatting_buf_name) })
 	end)
 	if return_val == 0 then
 		vim.schedule(function()
 			vim.notify("Exit code: 0", vim.log.levels.INFO, {
-				title = "Formatted "
-					.. vim.api.nvim_buf_get_option(vim.g.get_buf_by_name(vim.g.formatting_buf_name), "filetype")
-					.. " file.",
+				title = "Formatted " .. vim.api.nvim_get_option_value(
+					"filetype",
+					{ buf = vim.g.get_buf_by_name(vim.g.formatting_buf_name) }
+				) .. " file.",
 			})
 			vim.cmd(":drop " .. vim.g.formatting_buf_name)
 		end)
