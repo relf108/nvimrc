@@ -19,7 +19,10 @@ vim.opt.clipboard = "unnamedplus"
 
 -- Auto read on file change from external process
 vim.opt.autoread = true
-
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
+	command = "if mode() != 'c' | checktime | endif",
+	pattern = { "*" },
+})
 -- Auto save on text change
 vim.opt.autowrite = true
 vim.opt.autowriteall = true
