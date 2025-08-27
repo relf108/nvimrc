@@ -34,41 +34,41 @@ return {
 					expanded = "",
 				},
 				layouts = {
+					-- {
+					-- 	elements = {
+					-- 		{
+					-- 			id = "breakpoints",
+					-- 			size = 0.15,
+					-- 		},
+					-- 		{
+					-- 			id = "watches",
+					-- 			size = 0.15,
+					-- 		},
+					-- 		{
+					-- 			id = "stacks",
+					-- 			size = 0.15,
+					-- 		},
+					-- 		{
+					-- 			id = "scopes",
+					-- 			size = 0.55,
+					-- 		},
+					-- 	},
+					-- 	position = "left",
+					-- 	size = 60,
+					-- },
 					{
 						elements = {
 							{
-								id = "breakpoints",
-								size = 0.15,
+								id = "console",
+								size = 0.6,
 							},
 							{
-								id = "watches",
-								size = 0.15,
-							},
-							{
-								id = "stacks",
-								size = 0.15,
-							},
-							{
-								id = "scopes",
-								size = 0.55,
+								id = "repl",
+								size = 0.4,
 							},
 						},
 						position = "left",
-						size = 60,
-					},
-					{
-						elements = {
-							{
-								id = "repl",
-								size = 0.2,
-							},
-							{
-								id = "console",
-								size = 0.8,
-							},
-						},
-						position = "bottom",
-						size = 20,
+						size = 80,
 					},
 				},
 				mappings = {
