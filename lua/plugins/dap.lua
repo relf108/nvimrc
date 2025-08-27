@@ -12,7 +12,7 @@ return {
 			end
 
 			vim.keymap.set("n", "<F5>", function()
-				require("functions.dap-continue-with-validation")()
+				require("utils").dap_continue_with_validation()
 			end)
 			vim.keymap.set("n", "<F10>", function()
 				require("dap").step_over()

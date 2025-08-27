@@ -26,18 +26,10 @@ vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGai
 -- Auto save on text change
 vim.opt.autowrite = true
 vim.opt.autowriteall = true
-vim.autocmd = {
-	"TextChanged",
-	".*",
-	"silent",
-	"update",
-}
-vim.autocmd = {
-	"InsertLeave",
-	".*",
-	"silent",
-	"update",
-}
+vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave" }, {
+	pattern = "*",
+	command = "silent! update",
+})
 
 vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
 vim.g.mapleader = " "
@@ -51,68 +43,37 @@ vim.g.floaterm_keymap_prev = "TJ"
 vim.g.floaterm_keymap_first = "TH"
 vim.g.floaterm_keymap_last = "TL"
 
--- Theme config - matches catppuccino-mocha
-vim.g.colors = {
-	blue = "#89b4fa",
-	teal = "#94e2d5",
-	base = "#1e1e2e",
-	black = "#080808",
-	white = "#cdd6f4",
-	red = "#f38ba8",
-	mauve = "#cba6f7",
-	surface_zero = "#313244",
-	peach = "#fab387",
-	green = "#a6e3a1",
-}
-
-vim.g.catppuccin_theme = {
-	normal = {
-		a = { fg = vim.g.colors.black, bg = vim.g.colors.mauve },
-		b = { fg = vim.g.colors.white, bg = vim.g.colors.surface_zero },
-		c = { fg = vim.g.colors.base, bg = vim.g.colors.base },
-	},
-	insert = { a = { fg = vim.g.colors.black, bg = vim.g.colors.blue } },
-	visual = { a = { fg = vim.g.colors.black, bg = vim.g.colors.teal } },
-	replace = { a = { fg = vim.g.colors.black, bg = vim.g.colors.red } },
-	terminal = { a = { fg = vim.g.colors.black, bg = vim.g.colors.peach } },
-	command = { a = { fg = vim.g.colors.black, bg = vim.g.colors.green } },
-	inactive = {
-		a = { fg = vim.g.colors.white, bg = vim.g.colors.black },
-		b = { fg = vim.g.colors.white, bg = vim.g.colors.black },
-		c = { fg = vim.g.colors.black, bg = vim.g.colors.black },
-	},
-}
-
-function vim.g.get_buf_by_name(name)
-	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-		if vim.api.nvim_buf_get_name(buf) == name then
-			return buf
-		end
-	end
-	return 0
+-- Setup theme configuration
+local theme_status, theme = pcall(require, "config.theme")
+if theme_status then
+	theme.setup()
+else
+	vim.notify("Failed to load theme configuration", vim.log.levels.WARN)
 end
 
-function vim.g.python_path()
-	local conda = os.getenv("CONDA_PREFIX")
-	if conda then
-		return conda .. "/bin/python"
-	else
-		return vim.fn.exepath("python")
+-- Load utility functions
+local utils_status, utils = pcall(require, "utils")
+if utils_status then
+	vim.g.get_buf_by_name = utils.get_buf_by_name
+	vim.g.file_exists = utils.file_exists
+	vim.g.python_path = utils.python_path
+else
+	vim.notify("Failed to load utils module", vim.log.levels.ERROR)
+	-- Fallback implementations
+	vim.g.get_buf_by_name = function()
+		return 0
+	end
+	vim.g.file_exists = function()
+		return false
+	end
+	vim.g.python_path = function()
+		return "python"
 	end
 end
 
 vim.g.python3_host_prog = vim.g.python_path()
 vim.g.python_host_prog = vim.g.python_path()
-
 vim.g.work_dir = os.getenv("WORK_DIR") or "/tmp"
-
-function vim.g.file_exists(file)
-	local f = io.open(file, "rb")
-	if f then
-		f:close()
-	end
-	return f ~= nil
-end
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
@@ -136,15 +97,21 @@ vim.keymap.set("n", "<leader>f", require("formatting.utils.format"), { noremap =
 vim.g.completion_matching_strategy_list = { "exact", "substring" }
 vim.g.completion_matching_ignore_case = 1
 
-local cmdrepreat = require("functions.cmd-repeat")
+local utils_status, utils = pcall(require, "utils")
+if not utils_status then
+	vim.notify("Failed to load utils module", vim.log.levels.ERROR)
+	utils = { cmd_repeat = function() end } -- fallback
+end
+local cmdrepeat = utils.cmd_repeat
+
 -- Tab management
 vim.keymap.set("n", "tt", ":tabnew<cr>")
 vim.keymap.set("n", "td", ":tabclose<cr>")
 vim.keymap.set("n", "tk", function()
-	return cmdrepreat(":tabnext")
+	return cmdrepeat(":tabnext")
 end)
 vim.keymap.set("n", "tj", function()
-	return cmdrepreat(":tabprevious")
+	return cmdrepeat(":tabprevious")
 end)
 vim.keymap.set("n", "th", ":tabfirst<cr>")
 vim.keymap.set("n", "tl", ":tablast<cr>")
