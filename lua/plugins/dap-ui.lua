@@ -87,12 +87,9 @@ return {
 			require("dap").listeners.after.event_initialized["dapui_config"] = function()
 				require("dapui").open()
 			end
-			vim.api.nvim_set_keymap(
-				"n",
-				"<leader>du",
-				':lua require("dapui").toggle()<CR>',
-				{ noremap = true, silent = true }
-			)
+			vim.keymap.set("n", "<leader>du", function()
+				require("dapui").toggle()
+			end, { noremap = true, silent = true })
 		end,
 	},
 }
