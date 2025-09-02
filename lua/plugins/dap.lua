@@ -9,7 +9,7 @@ return {
 			{
 				"<F5>",
 				function()
-					require("utils").dap_continue_with_validation()
+					require("dap").continue()
 				end,
 				desc = "DAP Continue",
 			},
