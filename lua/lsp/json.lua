@@ -1,5 +1,5 @@
 local capabilities = require("blink.cmp").get_lsp_capabilities()
-require("lspconfig").jsonls.setup({
+vim.lsp.config("jsonls", {
 	capabilities = capabilities,
 	settings = {
 		json = {
@@ -10,4 +10,5 @@ require("lspconfig").jsonls.setup({
 		validate = { enable = true },
 	},
 })
+vim.lsp.enable("jsonls", true)
 return

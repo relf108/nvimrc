@@ -1,5 +1,5 @@
 local capabilities = require("blink.cmp").get_lsp_capabilities()
-require("lspconfig").lua_ls.setup({
+vim.lsp.config("lua_ls", {
 	capabilities = capabilities,
 	settings = {
 		Lua = {
@@ -9,4 +9,5 @@ require("lspconfig").lua_ls.setup({
 		},
 	},
 })
+vim.lsp.enable("lua_ls", true)
 return

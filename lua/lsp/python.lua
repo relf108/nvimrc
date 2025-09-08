@@ -5,7 +5,7 @@ capabilities["general"] = { positionEncodings = { "utf-16" } }
 -- Ruff
 local ruff_conf = vim.fn.expand("~/.config/ruff/ruff.toml")
 
-require("lspconfig").ruff.setup({
+vim.lsp.config("ruff", {
 	capabilities = capabilities,
 	on_attach = function(client)
 		client.server_capabilities.hoverProvider = false
@@ -18,9 +18,10 @@ require("lspconfig").ruff.setup({
 		},
 	},
 })
+vim.lsp.enable("ruff", true)
 
 -- Pyright
-require("lspconfig").pyright.setup({
+vim.lsp.config("pyright", {
 	capabilities = capabilities,
 	settings = {
 		pyright = {
@@ -34,13 +35,6 @@ require("lspconfig").pyright.setup({
 		},
 	},
 })
+vim.lsp.enable("pyright", true)
 
--- require("lspconfig").snyk_ls.setup({
--- 	capabilities = capabilities,
--- 	init_options = {
--- 		activateSnykCode = "true",
--- 		token = require("secrets.snyk").token,
--- 		organization = require("secrets.snyk").organization,
--- 	},
--- })
 return

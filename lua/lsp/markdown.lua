@@ -1,5 +1,6 @@
 local capabilities = require("blink.cmp").get_lsp_capabilities()
-require("lspconfig").marksman.setup({
+vim.lsp.config("marksman", {
 	capabilities = capabilities,
 })
+vim.lsp.enable("marksman", true)
 return
