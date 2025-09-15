@@ -35,5 +35,9 @@ return {
 			separator = "━━",
 			auto_fold = true, -- Automatically folds non-assistant messages
 		},
+		keys = {
+			{ "<leader>ch", "<cmd>CopilotChat<cr>", mode = { "n", "v" }, desc = "Run CopilotChat Tests" },
+			{ "<leader>ct", "<cmd>CopilotChatTests<cr>", mode = "v", desc = "Run CopilotChat Tests" },
+		},
 	},
 }

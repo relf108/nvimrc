@@ -122,6 +122,3 @@ vim.keymap.set("n", "<leader>sn", function()
 	vim.opt.relativenumber = true
 	vim.opt.number = true
 end)
-
--- Use FzfLua for ui.select
-require("fzf-lua").register_ui_select()
