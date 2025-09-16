@@ -17,9 +17,9 @@ return {
 			},
 			temperature = 0.1, -- Lower = focused, higher = creative
 			window = {
-				layout = "horizontal",
-				width = 0.8,
-				height = 0.3,
+				layout = "vertical",
+				width = 0.3,
+				-- height = 0.3,
 				row = nil,
 				col = nil,
 				relative = "editor",
