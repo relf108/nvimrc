@@ -49,7 +49,7 @@ return {
 					-- 			size = 0.15,
 					-- 		},
 					-- 		{
-					-- 			id = "scopes",
+					-- 			id = "repl",
 					-- 			size = 0.55,
 					-- 		},
 					-- 	},
@@ -63,7 +63,7 @@ return {
 								size = 0.6,
 							},
 							{
-								id = "repl",
+								id = "scopes",
 								size = 0.4,
 							},
 						},
