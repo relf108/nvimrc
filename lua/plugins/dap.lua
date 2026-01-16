@@ -1,6 +1,7 @@
 local dap_adapters = {
 	dart = require("dap.dart"),
 	python = require("dap.python"),
+	lua = require("dap.lua"),
 }
 return {
 	{
