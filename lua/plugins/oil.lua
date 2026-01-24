@@ -21,13 +21,13 @@ return {
 			},
 		},
 		dependencies = { "nvim-tree/nvim-web-devicons" },
-		lazy = false,
+		event = "VimEnter",
 		config = function(_, opts)
 			require("oil").setup(opts)
 
 			local preview_opened = {}
-			vim.api.nvim_create_autocmd("BufEnter", {
-				pattern = "*",
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "oil",
 				callback = function(args)
 					if vim.bo.filetype == "oil" and not preview_opened[args.buf] then
 						preview_opened[args.buf] = true

@@ -19,7 +19,8 @@ vim.opt.clipboard = "unnamedplus"
 
 -- Auto read on file change from external process
 vim.opt.autoread = true
-vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
+vim.opt.updatetime = 1000 -- Reduce CursorHold frequency (default 4000, setting to 1000ms)
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "FocusGained" }, {
 	command = "if mode() != 'c' | checktime | endif",
 	pattern = { "*" },
 })
@@ -71,8 +72,16 @@ else
 	end
 end
 
-vim.g.python3_host_prog = vim.g.python_path()
-vim.g.python_host_prog = vim.g.python_path()
+-- Lazy cache python path (only compute once when needed)
+local python_path_cache = nil
+local function get_python_path()
+	if not python_path_cache then
+		python_path_cache = vim.g.python_path()
+	end
+	return python_path_cache
+end
+vim.g.python3_host_prog = get_python_path()
+vim.g.python_host_prog = get_python_path()
 vim.g.work_dir = os.getenv("WORK_DIR") or "/tmp"
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -97,28 +106,30 @@ vim.keymap.set("n", "<leader>f", require("formatting.utils.format"), { noremap =
 vim.g.completion_matching_strategy_list = { "exact", "substring" }
 vim.g.completion_matching_ignore_case = 1
 
-local utils_status, utils = pcall(require, "utils")
-if not utils_status then
-	vim.notify("Failed to load utils module", vim.log.levels.ERROR)
-	utils = { cmd_repeat = function() end } -- fallback
-end
-local cmdrepeat = utils.cmd_repeat
+-- Reuse already loaded utils module
+local cmdrepeat = utils and utils.cmd_repeat or function() end
 
--- Tab management
-vim.keymap.set("n", "tt", ":tabnew<cr>")
-vim.keymap.set("n", "td", ":tabclose<cr>")
-vim.keymap.set("n", "tk", function()
-	return cmdrepeat(":tabnext")
-end)
-vim.keymap.set("n", "tj", function()
-	return cmdrepeat(":tabprevious")
-end)
-vim.keymap.set("n", "th", ":tabfirst<cr>")
-vim.keymap.set("n", "tl", ":tablast<cr>")
+-- Defer non-critical keymaps to after startup for faster load time
+vim.api.nvim_create_autocmd("VimEnter", {
+	once = true,
+	callback = function()
+		-- Tab management
+		vim.keymap.set("n", "tt", ":tabnew<cr>")
+		vim.keymap.set("n", "td", ":tabclose<cr>")
+		vim.keymap.set("n", "tk", function()
+			return cmdrepeat(":tabnext")
+		end)
+		vim.keymap.set("n", "tj", function()
+			return cmdrepeat(":tabprevious")
+		end)
+		vim.keymap.set("n", "th", ":tabfirst<cr>")
+		vim.keymap.set("n", "tl", ":tablast<cr>")
 
-vim.keymap.set("n", "<leader>dd", vim.diagnostic.setloclist)
+		vim.keymap.set("n", "<leader>dd", vim.diagnostic.setloclist)
 
-vim.keymap.set("n", "<leader>sn", function()
-	vim.opt.relativenumber = true
-	vim.opt.number = true
-end)
+		vim.keymap.set("n", "<leader>sn", function()
+			vim.opt.relativenumber = true
+			vim.opt.number = true
+		end)
+	end,
+})
