@@ -119,7 +119,7 @@ return {
 			{
 				"<leader>r",
 				function()
-					vim.cmd(":drop requests")
+					vim.cmd(":Oil requests")
 				end,
 				desc = "Open requests",
 			},

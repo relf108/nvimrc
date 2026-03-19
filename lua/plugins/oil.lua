@@ -21,7 +21,7 @@ return {
 			},
 		},
 		dependencies = { "nvim-tree/nvim-web-devicons" },
-		event = "VimEnter",
+		cmd = "Oil",
 		config = function(_, opts)
 			require("oil").setup(opts)
 
