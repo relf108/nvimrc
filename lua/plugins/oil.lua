@@ -5,7 +5,7 @@ return {
 		---@type oil.SetupOpts
 		opts = {
 			preview = {
-				preview_split = "belowright",
+				split = "belowright",
 				vertical = true,
 			},
 			preview_win = {
@@ -24,20 +24,14 @@ return {
 		cmd = "Oil",
 		config = function(_, opts)
 			require("oil").setup(opts)
-
-			local preview_opened = {}
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "oil",
-				callback = function(args)
-					if vim.bo.filetype == "oil" and not preview_opened[args.buf] then
-						preview_opened[args.buf] = true
-						vim.defer_fn(function()
-							if vim.bo.filetype == "oil" and vim.api.nvim_get_current_buf() == args.buf then
-								require("oil.actions").preview.callback({ vertical = true, split = "belowright" })
-							end
-						end, 100)
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "OilEnter",
+				callback = vim.schedule_wrap(function(args)
+					local oil = require("oil")
+					if vim.api.nvim_get_current_buf() == args.data.buf and oil.get_current_dir() then
+						oil.open_preview(opts["preview"])
 					end
-				end,
+				end),
 			})
 		end,
 	},
