@@ -1,40 +1,48 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
-		run = ":TSUpdate",
-		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = {
-					"c",
-					"lua",
-					"vim",
-					"vimdoc",
-					"query",
-					"python",
-					"dart",
-					"typescript",
-					"regex",
-					"bash",
-					"markdown",
-					"json",
-					"markdown_inline",
-					"sql",
-					"go",
-					"rust",
-					"yaml",
-					"cmake",
-					"nix",
-					"requirements",
-				},
-				sync_install = false,
-				ignore_install = { "javascript" },
-				highlight = {
-					enable = true,
-					additional_vim_regex_highlighting = false,
-				},
-				indent = {
-					enable = true,
-				},
+		branch = "main",
+		lazy = false,
+		init = function()
+			local ensure_installed = {
+				"c",
+				"lua",
+				"vim",
+				"vimdoc",
+				"query",
+				"python",
+				"dart",
+				"typescript",
+				"regex",
+				"bash",
+				"markdown",
+				"json",
+				"markdown_inline",
+				"sql",
+				"go",
+				"rust",
+				"yaml",
+				"cmake",
+				"nix",
+				"requirements",
+			}
+
+			local already_installed = require("nvim-treesitter.config").get_installed()
+			local to_install = vim.iter(ensure_installed)
+				:filter(function(parser)
+					return not vim.tbl_contains(already_installed, parser)
+				end)
+				:totable()
+
+			if #to_install > 0 then
+				require("nvim-treesitter").install(to_install)
+			end
+
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function()
+					pcall(vim.treesitter.start)
+					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				end,
 			})
 		end,
 	},
@@ -46,7 +54,7 @@ return {
 			"nvim-treesitter/nvim-treesitter",
 		},
 		build = function()
-			vim.cmd("TSInstall! pkl")
+			require("nvim-treesitter").install({ "pkl" })
 		end,
 	},
 }
