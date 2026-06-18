@@ -6,6 +6,7 @@ local dap_adapters = {
 return {
 	{
 		"mfussenegger/nvim-dap",
+		dependencies = { "rcarriga/nvim-dap-ui" },
 		keys = {
 			{
 				"<F5>",

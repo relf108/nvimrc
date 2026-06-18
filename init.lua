@@ -24,7 +24,9 @@ vim.opt.clipboard = "unnamedplus"
 -- Auto read on file change from external process
 vim.opt.autoread = true
 vim.opt.updatetime = 1000 -- Reduce CursorHold frequency (default 4000, setting to 1000ms)
+local autoread_group = vim.api.nvim_create_augroup("UserAutoRead", { clear = true })
 vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "FocusGained" }, {
+	group = autoread_group,
 	command = "if mode() != 'c' | checktime | endif",
 	pattern = { "*" },
 })
@@ -32,6 +34,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "FocusGained" }, {
 vim.opt.autowrite = true
 vim.opt.autowriteall = true
 vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave" }, {
+	group = autoread_group,
 	pattern = "*",
 	command = "silent! update",
 })
@@ -86,7 +89,9 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("plugins")
 
-vim.keymap.set("n", "<leader>f", require("formatting.utils.format"), { noremap = true })
+vim.keymap.set("n", "<leader>f", function()
+	require("formatting.utils.format")()
+end, { noremap = true })
 
 vim.g.completion_matching_strategy_list = { "exact", "substring" }
 vim.g.completion_matching_ignore_case = 1

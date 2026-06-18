@@ -1,9 +1,9 @@
 {
     "diagnostics.globals": [
         "vim",
-        "gsub",
+        "gsub"
     ],
     "diagnostics.disable": [
-        "missing-fields",
+        "missing-fields"
     ]
 }
