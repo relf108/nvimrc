@@ -76,16 +76,9 @@ else
 	end
 end
 
--- Lazy cache python path (only compute once when needed)
-local python_path_cache = nil
-local function get_python_path()
-	if not python_path_cache then
-		python_path_cache = vim.g.python_path()
-	end
-	return python_path_cache
-end
-vim.g.python3_host_prog = get_python_path()
-vim.g.python_host_prog = get_python_path()
+-- python_path() is memoized in utils, so these share one resolution
+vim.g.python3_host_prog = vim.g.python_path()
+vim.g.python_host_prog = vim.g.python_path()
 vim.g.work_dir = os.getenv("WORK_DIR") or "/tmp"
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

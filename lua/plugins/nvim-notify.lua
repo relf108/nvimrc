@@ -1,8 +1,9 @@
 return {
 	{
 		"rcarriga/nvim-notify",
+		event = "VeryLazy",
 		config = function()
-			vim.notify = require("notify").setup({
+			require("notify").setup({
 				-- Animation style (see below for details)
 				stages = "static",
 				fps = 60,
@@ -22,6 +23,7 @@ return {
 					TRACE = "✎",
 				},
 			})
+			vim.notify = require("notify")
 		end,
 	},
 }

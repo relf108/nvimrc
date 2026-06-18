@@ -20,23 +20,31 @@ function M.get_buf_by_name(name)
 	return 0
 end
 
--- Get Python path with error handling
+-- Get Python path with error handling (memoized after first resolution)
+local python_path_cache = nil
 function M.python_path()
+	if python_path_cache then
+		return python_path_cache
+	end
+
 	local conda = os.getenv("CONDA_PREFIX")
 	if conda then
 		local python_path = conda .. "/bin/python"
 		if M.file_exists(python_path) then
-			return python_path
+			python_path_cache = python_path
+			return python_path_cache
 		end
 	end
 
 	local system_python = vim.fn.exepath("python")
 	if system_python and system_python ~= "" then
-		return system_python
+		python_path_cache = system_python
+		return python_path_cache
 	end
 
 	-- Fallback
-	return "python"
+	python_path_cache = "python"
+	return python_path_cache
 end
 
 -- Check if file exists with error handling
