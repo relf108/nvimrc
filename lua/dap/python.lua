@@ -1,5 +1,5 @@
 return {
 	type = "executable",
-	command = vim.g.python_path(),
+	command = require("utils").python_path(),
 	args = { "-m", "debugpy.adapter" },
 }

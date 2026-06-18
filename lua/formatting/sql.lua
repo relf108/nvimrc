@@ -1,5 +1,6 @@
 local job = require("plenary.job")
 local on_exit = require("formatting.utils.format_exit")
+local utils = require("utils")
 
 local added_ext = false
 local name = ""
@@ -29,7 +30,7 @@ return function()
 	end
 
 	local args = { "fix", name, "--dialect", "postgres", "-q" }
-	if vim.g.file_exists("./pyproject.toml") then
+	if utils.file_exists("./pyproject.toml") then
 		table.insert(args, "--config")
 		table.insert(args, "./pyproject.toml")
 	end

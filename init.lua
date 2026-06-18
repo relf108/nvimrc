@@ -56,29 +56,17 @@ else
 	vim.notify("Failed to load theme configuration", vim.log.levels.WARN)
 end
 
--- Load utility functions
+-- Load utility functions (required directly where needed via require("utils"))
 local utils_status, utils = pcall(require, "utils")
-if utils_status then
-	vim.g.get_buf_by_name = utils.get_buf_by_name
-	vim.g.file_exists = utils.file_exists
-	vim.g.python_path = utils.python_path
-else
+if not utils_status then
 	vim.notify("Failed to load utils module", vim.log.levels.ERROR)
-	-- Fallback implementations
-	vim.g.get_buf_by_name = function()
-		return 0
-	end
-	vim.g.file_exists = function()
-		return false
-	end
-	vim.g.python_path = function()
-		return "python"
-	end
+	utils = nil
 end
 
 -- python_path() is memoized in utils, so these share one resolution
-vim.g.python3_host_prog = vim.g.python_path()
-vim.g.python_host_prog = vim.g.python_path()
+local python_path = utils and utils.python_path() or "python"
+vim.g.python3_host_prog = python_path
+vim.g.python_host_prog = python_path
 vim.g.work_dir = os.getenv("WORK_DIR") or "/tmp"
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"

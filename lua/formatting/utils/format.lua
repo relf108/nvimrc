@@ -7,6 +7,7 @@ local yaml = require("formatting.yaml")
 local nix = require("formatting.nix")
 local xml = require("formatting.xml")
 local toml = require("formatting.toml")
+local utils = require("utils")
 
 vim.g.formatting_buf_name = ""
 
@@ -51,7 +52,7 @@ return function()
 		local format_success, jobs = pcall(format_overrides[filetype])
 		if format_success and jobs then
 			for _, job in ipairs(jobs) do
-				local buf = vim.g.get_buf_by_name(vim.g.formatting_buf_name)
+				local buf = utils.get_buf_by_name(vim.g.formatting_buf_name)
 				if buf and buf ~= 0 then
 					pcall(vim.api.nvim_set_option_value, "readonly", true, { buf = buf })
 					pcall(job.start, job)

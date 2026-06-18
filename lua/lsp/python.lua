@@ -1,12 +1,10 @@
--- Define capabilities
-local capabilities = require("blink.cmp").get_lsp_capabilities()
-capabilities["general"] = { positionEncodings = { "utf-16" } }
+local lsp = require("lsp")
+local utils = require("utils")
 
 -- Ruff
 local ruff_conf = vim.fn.expand("~/.config/ruff/ruff.toml")
 
-vim.lsp.config("ruff", {
-	capabilities = capabilities,
+lsp.enable("ruff", {
 	on_attach = function(client)
 		client.server_capabilities.hoverProvider = false
 	end,
@@ -18,23 +16,18 @@ vim.lsp.config("ruff", {
 		},
 	},
 })
-vim.lsp.enable("ruff", true)
 
 -- Pyright
-vim.lsp.config("pyright", {
-	capabilities = capabilities,
+lsp.enable("pyright", {
 	settings = {
 		pyright = {
 			disableOrganizeImports = true,
 		},
 		python = {
-			pythonPath = vim.g.python_path(),
+			pythonPath = utils.python_path(),
 			analysis = {
 				ignore = { "*" },
 			},
 		},
 	},
 })
-vim.lsp.enable("pyright", true)
-
-return
