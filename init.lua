@@ -41,12 +41,12 @@ vim.g.mapleader = " "
 
 -- Toggle term (Need to be configured as globals)
 vim.g.floaterm_keymap_toggle = "<C-t>"
-vim.g.floaterm_keymap_new = "TT"
-vim.g.floaterm_keymap_kill = "TD"
-vim.g.floaterm_keymap_next = "TK"
-vim.g.floaterm_keymap_prev = "TJ"
-vim.g.floaterm_keymap_first = "TH"
-vim.g.floaterm_keymap_last = "TL"
+vim.g.floaterm_keymap_new = "<C-S-n>"
+vim.g.floaterm_keymap_kill = "<C-S-d>"
+vim.g.floaterm_keymap_next = "<C-S-k>"
+vim.g.floaterm_keymap_prev = "<C-S-j>"
+vim.g.floaterm_keymap_first = "<C-S-h>"
+vim.g.floaterm_keymap_last = "<C-S-l>"
 
 -- Setup theme configuration
 local theme_status, theme = pcall(require, "config.theme")
