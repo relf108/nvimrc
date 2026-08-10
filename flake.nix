@@ -30,15 +30,15 @@
               with pkgs;
               [ python313 ]
               ++
-                # Required packages for nvim python config
-                (with pkgs.python313Packages; [
-                  pip
-                  venvShellHook
-                  neovim
-                  debugpy
-                  ruff
-                  pyright
-                ]);
+              # Required packages for nvim python config
+              (with pkgs.python313Packages; [
+                pip
+                venvShellHook
+                neovim
+                debugpy
+                ruff
+                pyright
+              ]);
           };
         }
       );
