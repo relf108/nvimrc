@@ -6,4 +6,4 @@ debugpy
 
 # LSP
 ruff
-pyright
+ty

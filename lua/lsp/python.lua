@@ -1,5 +1,4 @@
 local lsp = require("lsp")
-local utils = require("utils")
 
 -- Ruff
 local ruff_conf = vim.fn.expand("~/.config/ruff/ruff.toml")
@@ -17,17 +16,5 @@ lsp.enable("ruff", {
 	},
 })
 
--- Pyright
-lsp.enable("pyright", {
-	settings = {
-		pyright = {
-			disableOrganizeImports = true,
-		},
-		python = {
-			pythonPath = utils.python_path(),
-			analysis = {
-				ignore = { "*" },
-			},
-		},
-	},
-})
+-- ty
+lsp.enable("ty")

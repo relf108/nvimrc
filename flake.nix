@@ -22,25 +22,20 @@
         );
     in
     {
-      devShells = forEachSupportedSystem (
-        { pkgs }: {
-          default = pkgs.mkShell {
-            venvDir = ".venv";
-            packages =
-              with pkgs;
-              [ python313 ]
-              ++
-              # Required packages for nvim python config
-              (with pkgs.python313Packages; [
-                pip
-                venvShellHook
-                neovim
-                debugpy
-                ruff
-                pyright
-              ]);
-          };
-        }
-      );
+      devShells = forEachSupportedSystem
+        ({ pkgs }: {
+          default = pkgs.mkShell
+            {
+              venvDir = ".venv";
+              packages = with pkgs; [ python313 ty uv ] ++
+                # Required packages for nvim python config
+                (with pkgs.python313Packages; [
+                  venvShellHook
+                  neovim
+                  debugpy
+                  ruff
+                ]);
+            };
+        });
     };
 }
