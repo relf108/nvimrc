@@ -11,7 +11,7 @@ Shared Neovim config. Plugin manager is [lazy.nvim](https://github.com/folke/laz
 - [ripgrep](https://github.com/BurntSushi/ripgrep) (for live grep)
 - Python 3 with packages from `requirements.txt`:
   ```sh
-  pip install -r requirements.txt   # neovim, debugpy, ruff, pyright
+  pip install -r requirements.txt   # neovim, debugpy, ruff, ty
   ```
   Or with Nix: `nix develop` (drops you into a shell with everything set up).
 
@@ -40,7 +40,7 @@ git clone <this-repo> ~/.config/nvim
 nvim
 ```
 
-First launch bootstraps lazy.nvim and installs all plugins automatically. LSP servers (`ruff`, `pyright`, `lua_ls`, `jsonls`, `marksman`) must be on your `$PATH` — they are installed separately, not via Mason.
+First launch bootstraps lazy.nvim and installs all plugins automatically. LSP servers (`ruff`, `ty`, `lua_ls`, `jsonls`, `marksman`) must be on your `$PATH` — they are installed separately, not via Mason.
 
 ## Default behaviour worth knowing
 

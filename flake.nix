@@ -22,12 +22,18 @@
         );
     in
     {
-      devShells = forEachSupportedSystem
-        ({ pkgs }: {
-          default = pkgs.mkShell
-            {
-              venvDir = ".venv";
-              packages = with pkgs; [ python313 ty uv ] ++
+      devShells = forEachSupportedSystem (
+        { pkgs }: {
+          default = pkgs.mkShell {
+            venvDir = ".venv";
+            packages =
+              with pkgs;
+              [
+                python313
+                ty
+                uv
+              ]
+              ++
                 # Required packages for nvim python config
                 (with pkgs.python313Packages; [
                   venvShellHook
@@ -35,7 +41,8 @@
                   debugpy
                   ruff
                 ]);
-            };
-        });
+          };
+        }
+      );
     };
 }
