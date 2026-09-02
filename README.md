@@ -1,12 +1,12 @@
 # Neovim Config
 
-Shared Neovim config. Plugin manager is [lazy.nvim](https://github.com/folke/lazy.nvim), theme is catppuccin-mocha, leader key is `Space`.
+Shared Neovim config. Plugins are installed and loaded by native [`vim.pack`](https://neovim.io/doc/user/pack.html#vim.pack). Theme is catppuccin-mocha; leader key is `Space`.
 
 ## Requirements
 
 **Required:**
 
-- Neovim 0.11+ (uses the `vim.lsp.config` / `vim.lsp.enable` API)
+- Neovim 0.12+ (uses `vim.pack` and the `vim.lsp.config` / `vim.lsp.enable` API)
 - A [Nerd Font](https://www.nerdfonts.com/) installed and set in your terminal (icons, DB UI)
 - [ripgrep](https://github.com/BurntSushi/ripgrep) (for live grep)
 - Python 3 with packages from `requirements.txt`:
@@ -40,7 +40,49 @@ git clone <this-repo> ~/.config/nvim
 nvim
 ```
 
-First launch bootstraps lazy.nvim and installs all plugins automatically. LSP servers (`ruff`, `ty`, `lua_ls`, `jsonls`, `marksman`) must be on your `$PATH` — they are installed separately, not via Mason.
+First launch installs the revisions in `nvim-pack-lock.json` automatically. LSP servers (`ruff`, `ty`, `lua_ls`, `jsonls`, `marksman`) must be on your `$PATH` — they are installed separately, not via Mason.
+
+Use `:lua vim.pack.update()` to review plugin updates. Write the generated buffer to apply them, then commit the updated lockfile.
+
+### Plugin loading differences
+
+- Files under `plugin/` are native runtime files sourced automatically by Neovim. Each file owns its `vim.pack.add()` call, setup, mappings, and lazy-loading events.
+- Startup-critical plugins load immediately. Event-driven plugins register with `load = function() end` and load later through one-shot autocommands or explicit mappings.
+- Shared Lua and runtime dependencies load with `:packadd!` semantics in `plugin/00-dependencies.lua`; their plugin scripts are not executed.
+- `lua/plugin_loader.lua` makes `:packadd` plus setup idempotent. It does not implement plugin discovery, dependency resolution, or trigger replay.
+- Native `CmdUndefined` autocommands preserve direct commands for command-driven plugins.
+- `vim.pack` has no UI, profiler, background update checker, or automatic build hooks. Use its Lua API for package operations.
+
+### Adding a plugin
+
+Create one runtime file under `plugin/`. Neovim discovers and sources it automatically:
+
+```lua
+vim.pack.add({ "https://github.com/owner/plugin.nvim" }, { confirm = false, load = true })
+require("plugin").setup({})
+```
+
+For event-based lazy loading, register without loading and use the shared loader once needed:
+
+```lua
+local loader = require("plugin_loader")
+
+vim.pack.add({ "https://github.com/owner/plugin.nvim" }, {
+	confirm = false,
+	load = function() end,
+})
+
+vim.api.nvim_create_autocmd("InsertEnter", {
+	once = true,
+	callback = function()
+		loader.load("plugin.nvim", function()
+			require("plugin").setup({})
+		end)
+	end,
+})
+```
+
+Use `name` when the package name differs from the repository name, and `version` for a branch, tag, commit, or `vim.VersionRange`. Add shared Lua/runtime-only dependencies to `plugin/00-dependencies.lua`.
 
 ## Default behaviour worth knowing
 
@@ -138,14 +180,15 @@ Leader = `Space`.
 ## Layout
 
 ```
-init.lua                 -- options, autocmds, core keymaps, lazy.nvim bootstrap
+init.lua                 -- options, autocmds, core keymaps
 lua/
-  plugins/               -- one file per plugin (lazy.nvim specs)
+  plugin_loader.lua      -- idempotent native packadd + setup helper
   lsp/                   -- per-language LSP setup
   dap/                   -- per-language debug adapters
   formatting/            -- per-filetype formatter definitions
   config/theme.lua       -- colours + lualine theme
   utils.lua              -- shared helpers
+plugin/                  -- native runtime files, one per plugin or feature
 ```
 
 ## Adding or changing formatters

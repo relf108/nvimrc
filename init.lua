@@ -23,7 +23,7 @@ vim.opt.clipboard = "unnamedplus"
 
 -- Auto read on file change from external process
 vim.opt.autoread = true
-vim.opt.updatetime = 1000 -- Reduce CursorHold frequency (default 4000, setting to 1000ms)
+vim.opt.updatetime = 1000 -- Trigger CursorHold after one second of idle time
 local autoread_group = vim.api.nvim_create_augroup("UserAutoRead", { clear = true })
 vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "FocusGained" }, {
 	group = autoread_group,
@@ -41,15 +41,6 @@ vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave" }, {
 
 vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
 vim.g.mapleader = " "
-
--- Toggle term (Need to be configured as globals)
-vim.g.floaterm_keymap_toggle = "<C-t>"
-vim.g.floaterm_keymap_new = "<C-S-n>"
-vim.g.floaterm_keymap_kill = "<C-S-d>"
-vim.g.floaterm_keymap_next = "<C-S-k>"
-vim.g.floaterm_keymap_prev = "<C-S-j>"
-vim.g.floaterm_keymap_first = "<C-S-h>"
-vim.g.floaterm_keymap_last = "<C-S-l>"
 
 -- Setup theme configuration
 local theme_status, theme = pcall(require, "config.theme")
@@ -72,29 +63,9 @@ vim.g.python3_host_prog = python_path
 vim.g.python_host_prog = python_path
 vim.g.work_dir = os.getenv("WORK_DIR") or "/tmp"
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-
----@diagnostic disable-next-line: undefined-field
-if not vim.loop.fs_stat(lazypath) then
-	vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
-		lazypath,
-	})
-end
-vim.opt.rtp:prepend(lazypath)
-
-require("lazy").setup("plugins")
-
 vim.keymap.set("n", "<leader>f", function()
 	require("formatting.utils.format")()
 end, { noremap = true })
-
-vim.g.completion_matching_strategy_list = { "exact", "substring" }
-vim.g.completion_matching_ignore_case = 1
 
 -- Reuse already loaded utils module
 local cmdrepeat = utils and utils.cmd_repeat or function() end
