@@ -11,6 +11,10 @@ local function setup()
 	vim.api.nvim_create_autocmd("LspAttach", {
 		group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 		callback = function(ev)
+			if vim.b[ev.buf].user_lsp_configured then
+				return
+			end
+			vim.b[ev.buf].user_lsp_configured = true
 			vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 			local opts = { buffer = ev.buf }
 			vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
@@ -31,7 +35,8 @@ local function setup()
 	})
 end
 
-vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "json", "jsonc", "lua", "markdown", "markdown.mdx", "python" },
 	once = true,
 	callback = function()
 		loader.load("nvim-lspconfig", setup)

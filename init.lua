@@ -36,7 +36,14 @@ vim.opt.autowriteall = true
 vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave" }, {
 	group = autoread_group,
 	pattern = "*",
-	command = "silent! update",
+	callback = function(args)
+		local options = vim.bo[args.buf]
+		if options.modified and not options.readonly then
+			vim.api.nvim_buf_call(args.buf, function()
+				vim.cmd("silent! update")
+			end)
+		end
+	end,
 })
 
 vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
@@ -50,14 +57,12 @@ else
 	vim.notify("Failed to load theme configuration", vim.log.levels.WARN)
 end
 
--- Load utility functions (required directly where needed via require("utils"))
 local utils_status, utils = pcall(require, "utils")
 if not utils_status then
 	vim.notify("Failed to load utils module", vim.log.levels.ERROR)
 	utils = nil
 end
 
--- python_path() is memoized in utils, so these share one resolution
 local python_path = utils and utils.python_path() or "python"
 vim.g.python3_host_prog = python_path
 vim.g.python_host_prog = python_path
@@ -67,7 +72,6 @@ vim.keymap.set("n", "<leader>f", function()
 	require("formatting.utils.format")()
 end, { noremap = true })
 
--- Reuse already loaded utils module
 local cmdrepeat = utils and utils.cmd_repeat or function() end
 
 -- Defer non-critical keymaps to after startup for faster load time

@@ -6,30 +6,41 @@ vim.pack.add({
 	"https://github.com/kristijanhusak/vim-dadbod-ui",
 }, { confirm = false, load = function() end })
 
-local function load_dadbod()
+local load_dadbod = loader.lazy_commands({
+	DB = { nargs = "?", bang = true, range = -1 },
+}, function()
 	loader.load("vim-dadbod")
-end
+end)
 
-local function load_ui()
+local load_completion = loader.lazy_commands({
+	DBCompletionClearCache = { nargs = 0 },
+}, function()
+	load_dadbod()
+	loader.load("vim-dadbod-completion")
+end)
+
+local load_ui = loader.lazy_commands({
+	DBUI = { nargs = 0 },
+	DBUIToggle = { nargs = 0 },
+	DBUIClose = { nargs = 0 },
+	DBUIAddConnection = { nargs = 0 },
+	DBUIFindBuffer = { nargs = 0 },
+	DBUIRenameBuffer = { nargs = 0 },
+	DBUILastQueryInfo = { nargs = 0 },
+}, function()
 	vim.g.db_ui_use_nerd_fonts = 1
 	vim.g.db_ui_auto_execute_table_helpers = 1
 	load_dadbod()
 	loader.load("vim-dadbod-ui")
-end
+end)
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "sql", "mysql", "plsql" },
 	once = true,
 	callback = function()
 		load_dadbod()
-		loader.load("vim-dadbod-completion")
+		load_completion()
 	end,
-})
-
-vim.api.nvim_create_autocmd("CmdUndefined", {
-	pattern = "DBUI*",
-	once = true,
-	callback = load_ui,
 })
 
 vim.keymap.set("n", "<leader>dbt", function()

@@ -79,7 +79,7 @@
       "src": "https://github.com/rcarriga/nvim-dap-ui"
     },
     "nvim-lspconfig": {
-      "rev": "84252f9832fb5b9024fe9f7258e7c2aff915e6fb",
+      "rev": "da1aff0332774a0f60d52bf972e815dfc226f276",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-nio": {
@@ -91,7 +91,7 @@
       "src": "https://github.com/rcarriga/nvim-notify"
     },
     "nvim-treesitter": {
-      "rev": "41416e81a6c7f4af4984395bfe0cd8d174e70976",
+      "rev": "5cb0114e6242625db56dd6440e945ed1ece10bc7",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter",
       "version": "'main'"
     },
@@ -135,10 +135,6 @@
     "vim-floaterm": {
       "rev": "7712701c5d20a0f9c935fbc2a6334083ce89b558",
       "src": "https://github.com/voldikss/vim-floaterm"
-    },
-    "vim-highlightedyank": {
-      "rev": "285a61425e79742997bbde76a91be6189bc988fb",
-      "src": "https://github.com/machakann/vim-highlightedyank"
     }
   }
 }

@@ -20,7 +20,9 @@ local opts = {
 	},
 }
 
-local function load()
+local load = loader.lazy_commands({
+	Oil = { nargs = "*", complete = "dir", count = true },
+}, function()
 	loader.load("oil.nvim", function()
 		require("oil").setup(opts)
 		vim.api.nvim_create_autocmd("User", {
@@ -33,13 +35,7 @@ local function load()
 			end),
 		})
 	end)
-end
-
-vim.api.nvim_create_autocmd("CmdUndefined", {
-	pattern = "Oil",
-	once = true,
-	callback = load,
-})
+end)
 
 vim.keymap.set("n", "<leader>r", function()
 	load()
