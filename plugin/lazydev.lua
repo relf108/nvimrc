@@ -2,9 +2,7 @@ local loader = require("plugin_loader")
 
 vim.pack.add({ "https://github.com/folke/lazydev.nvim" }, { confirm = false, load = function() end })
 
-local load = loader.lazy_commands({
-	LazyDev = { nargs = "*" },
-}, function()
+local load = loader.lazy(function()
 	loader.load("lazydev.nvim", function()
 		require("lazydev").setup({
 			library = {

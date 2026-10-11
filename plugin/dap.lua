@@ -5,23 +5,7 @@ vim.pack.add({
 	"https://github.com/rcarriga/nvim-dap-ui",
 }, { confirm = false, load = function() end })
 
-local load_dap = loader.lazy_commands({
-	DapSetLogLevel = { nargs = 1 },
-	DapShowLog = { nargs = 0 },
-	DapContinue = { nargs = 0 },
-	DapToggleBreakpoint = { nargs = 0 },
-	DapClearBreakpoints = { nargs = 0 },
-	DapToggleRepl = { nargs = 0 },
-	DapStepOver = { nargs = 0 },
-	DapStepInto = { nargs = 0 },
-	DapStepOut = { nargs = 0 },
-	DapPause = { nargs = 0 },
-	DapTerminate = { nargs = 0 },
-	DapDisconnect = { nargs = 0 },
-	DapRestartFrame = { nargs = 0 },
-	DapNew = { nargs = "*" },
-	DapEval = { nargs = 0, bang = true, range = "%", bar = true },
-}, function()
+local load_dap = loader.lazy(function()
 	loader.load("nvim-dap", function()
 		local dap = require("dap")
 		dap.adapters.dart = require("dap.dart")

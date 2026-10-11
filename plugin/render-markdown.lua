@@ -5,9 +5,7 @@ vim.pack.add({ "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
 	load = function() end,
 })
 
-local load = loader.lazy_commands({
-	RenderMarkdown = { nargs = "*" },
-}, function()
+local load = loader.lazy(function()
 	loader.load("render-markdown.nvim", function()
 		require("render-markdown").setup({})
 	end)

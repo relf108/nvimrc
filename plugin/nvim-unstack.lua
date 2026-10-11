@@ -8,9 +8,10 @@ vim.pack.add({
 }, { confirm = false, load = function() end })
 
 local load = loader.lazy_commands({
-	NvimUnstack = {},
-	UnstackFromClipboard = {},
-	UnstackFromTmux = {},
+	NvimUnstack = { desc = "Unstack traceback" },
+	UnstackFromClipboard = { desc = "Unstack traceback from clipboard" },
+	UnstackFromTmux = { desc = "Unstack traceback from tmux pane" },
+	UnstackFromFile = { nargs = 1, complete = "file", desc = "Unstack traceback from a filepath" },
 }, function()
 	loader.load("nvim-unstack", function()
 		require("nvim-unstack").setup({

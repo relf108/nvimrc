@@ -21,7 +21,7 @@ local opts = {
 }
 
 local load = loader.lazy_commands({
-	Oil = { nargs = "*", complete = "dir", count = true },
+	Oil = { nargs = "*", complete = "dir", count = true, desc = "Open parent directory in a buffer" },
 }, function()
 	loader.load("oil.nvim", function()
 		require("oil").setup(opts)

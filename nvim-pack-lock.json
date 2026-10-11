@@ -26,11 +26,11 @@
       "src": "https://github.com/stevearc/dressing.nvim"
     },
     "fastaction.nvim": {
-      "rev": "b147d91727cb35be4f722f17e7d4ed5b4a5801d8",
+      "rev": "3f0b6de0853fe47ba47339056332c431134155b9",
       "src": "https://github.com/Chaitanyabsprip/fastaction.nvim"
     },
     "flutter-tools.nvim": {
-      "rev": "11ca760211fcdfef1794df8cf2ff2b78aaf102b9",
+      "rev": "8b139a870eae9520fc3e8473820b82bc1b210bcf",
       "src": "https://github.com/akinsho/flutter-tools.nvim"
     },
     "friendly-snippets": {
@@ -38,7 +38,7 @@
       "src": "https://github.com/rafamadriz/friendly-snippets"
     },
     "fzf-lua": {
-      "rev": "13bb178a299f7493dd64427a58e61904c4b58ecb",
+      "rev": "48d7c3db291a2c7c1825905c227a6bc81c83b837",
       "src": "https://github.com/ibhagwan/fzf-lua"
     },
     "git-blame.nvim": {
@@ -67,7 +67,7 @@
       "src": "https://github.com/MunifTanjim/nui.nvim"
     },
     "nvim-autopairs": {
-      "rev": "430522f95fe4fb7c511ec64f8c1a90cc6a66c05c",
+      "rev": "3172f40c16563db871a58f20d205c710ad782311",
       "src": "https://github.com/windwp/nvim-autopairs"
     },
     "nvim-dap": {
@@ -79,7 +79,7 @@
       "src": "https://github.com/rcarriga/nvim-dap-ui"
     },
     "nvim-lspconfig": {
-      "rev": "ffd261c09c3dabd0bf1a438f47a8ae3b22f3c3ff",
+      "rev": "c59fc922f718fa055f69f5f3bc888f23211571eb",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-nio": {
@@ -91,14 +91,14 @@
       "src": "https://github.com/rcarriga/nvim-notify"
     },
     "nvim-treesitter": {
-      "rev": "f603a2f4da48728f80257fb5fbb90145fd1dc173",
+      "rev": "1a4f47b03dfe92d28de7d5654c67327ef008c9e6",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter",
       "version": "'main'"
     },
     "nvim-unstack": {
-      "rev": "c25d04f8642e22a4bb753266edf55d0ea6d31245",
+      "rev": "32219ed3d5b881430454471013fd4a8ff1091b4f",
       "src": "https://github.com/relf108/nvim-unstack",
-      "version": ">=0.0.0"
+      "version": "'feat/load-stack-from-file'"
     },
     "nvim-web-devicons": {
       "rev": "58447c1fca354bbf184425e4a8d01deecbd6f3c4",
@@ -109,7 +109,7 @@
       "src": "https://github.com/stevearc/oil.nvim"
     },
     "pkl-neovim": {
-      "rev": "7907b89958d06fa5a5dc72eeb26d8289605595c3",
+      "rev": "20bfa7232262f36da45470170e7a954e487f4ac6",
       "src": "https://github.com/apple/pkl-neovim"
     },
     "plenary.nvim": {
@@ -117,7 +117,7 @@
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
     "render-markdown.nvim": {
-      "rev": "640a3ec6d538bad17c328be373c7cad0293d9589",
+      "rev": "8e8795368391036643b622875a6da6a51bcd33f4",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
     "vim-dadbod": {
@@ -135,6 +135,10 @@
     "vim-floaterm": {
       "rev": "7712701c5d20a0f9c935fbc2a6334083ce89b558",
       "src": "https://github.com/voldikss/vim-floaterm"
+    },
+    "vim-highlightedyank": {
+      "rev": "285a61425e79742997bbde76a91be6189bc988fb",
+      "src": "https://github.com/machakann/vim-highlightedyank"
     }
   }
 }

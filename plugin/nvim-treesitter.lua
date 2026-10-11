@@ -9,7 +9,7 @@ vim.pack.add({
 vim.pack.add({ "https://github.com/apple/pkl-neovim" }, { confirm = false, load = function() end })
 
 local load_pkl = loader.lazy_commands({
-	Pkl = { nargs = "+" },
+	Pkl = { nargs = "+", desc = "Run a pkl command" },
 }, function()
 	loader.load("pkl-neovim")
 end)

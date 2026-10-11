@@ -2,9 +2,7 @@ local loader = require("plugin_loader")
 
 vim.pack.add({ "https://github.com/ibhagwan/fzf-lua" }, { confirm = false, load = function() end })
 
-local load = loader.lazy_commands({
-	FzfLua = { nargs = "*", range = true },
-}, function()
+local load = loader.lazy(function()
 	loader.load("fzf-lua", function()
 		require("fzf-lua").setup({})
 	end)

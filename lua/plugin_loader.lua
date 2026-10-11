@@ -29,20 +29,25 @@ function M.load(name, setup)
 	configured[name] = true
 end
 
-function M.lazy_commands(commands, load)
+function M.lazy(load)
 	local loaded = false
 
-	local function ensure_loaded()
+	return function()
 		if loaded then
 			return
-		end
-
-		for command in pairs(commands) do
-			pcall(vim.api.nvim_del_user_command, command)
 		end
 		load()
 		loaded = true
 	end
+end
+
+function M.lazy_commands(commands, load)
+	local ensure_loaded = M.lazy(function()
+		for command in pairs(commands) do
+			pcall(vim.api.nvim_del_user_command, command)
+		end
+		load()
+	end)
 
 	local function create_proxy(command, opts)
 		vim.api.nvim_create_user_command(command, function(ctx)
