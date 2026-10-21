@@ -1,3 +1,5 @@
+vim.loader.enable()
+
 -- Disable netrw (we use fzf-lua on startup instead)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -8,7 +10,14 @@ vim.opt.number = true
 
 -- Enable spellcheck
 vim.opt.spelllang = "en_au"
-vim.opt.spell = true
+vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile", "BufEnter" }, {
+	callback = function(args)
+		if vim.bo[args.buf].buftype == "" then
+			vim.opt.spell = true
+			vim.api.nvim_del_autocmd(args.id)
+		end
+	end,
+})
 
 -- Set terminal to 24-bit color
 vim.opt.termguicolors = true
@@ -98,3 +107,13 @@ vim.api.nvim_create_autocmd("VimEnter", {
 		end)
 	end,
 })
+
+-- Start the picker subprocess before loading unrelated plugin configurations.
+if vim.fn.argc(-1) == 0 then
+	vim.g.startup_picker_early = true
+	local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h")
+	for _, name in ipairs({ "catppuccin", "nvim-web-devicons", "fzf-lua" }) do
+		dofile(root .. "/plugin/" .. name .. ".lua")
+	end
+	vim.g.startup_picker_early = nil
+end

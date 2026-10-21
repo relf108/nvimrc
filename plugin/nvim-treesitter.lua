@@ -39,6 +39,13 @@ local ensure_installed = {
 }
 
 local function start(buf)
+	if not vim.api.nvim_buf_is_valid(buf) or not vim.api.nvim_buf_is_loaded(buf) then
+		return
+	end
+	local options = vim.bo[buf]
+	if options.filetype == "" or (options.buftype ~= "" and options.buftype ~= "help") then
+		return
+	end
 	if pcall(vim.treesitter.start, buf) then
 		vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 	end
@@ -81,7 +88,9 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-vim.api.nvim_create_autocmd("VimEnter", { once = true, callback = install_missing })
+vim.api.nvim_create_user_command("TSInstallMissing", install_missing, {
+	desc = "Install missing parsers from the configured Tree-sitter language list",
+})
 
 vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
 	pattern = "*.pkl",

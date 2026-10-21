@@ -98,7 +98,7 @@
     "nvim-unstack": {
       "rev": "32219ed3d5b881430454471013fd4a8ff1091b4f",
       "src": "https://github.com/relf108/nvim-unstack",
-      "version": "'feat/load-stack-from-file'"
+      "version": ">=0.0.0"
     },
     "nvim-web-devicons": {
       "rev": "58447c1fca354bbf184425e4a8d01deecbd6f3c4",

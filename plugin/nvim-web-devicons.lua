@@ -1,3 +1,8 @@
+if vim.g.config_devicons_loaded then
+	return
+end
+vim.g.config_devicons_loaded = true
+
 vim.pack.add({ "https://github.com/nvim-tree/nvim-web-devicons" }, { confirm = false, load = true })
 
 require("nvim-web-devicons").setup({

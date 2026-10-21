@@ -44,6 +44,8 @@ First launch installs the revisions in `nvim-pack-lock.json` automatically. LSP 
 
 Use `:lua vim.pack.update()` to review plugin updates. Write the generated buffer to apply them, then commit the updated lockfile.
 
+Run `:TSInstallMissing` after installation to install the configured Tree-sitter parsers. Parser maintenance does not run at startup. Run `:TSUpdate` after updating nvim-treesitter to keep installed parsers compatible.
+
 ### Plugin loading differences
 
 - Files under `plugin/` are native runtime files sourced automatically by Neovim. Each file owns its `vim.pack.add()` call, setup, mappings, and lazy-loading events.
@@ -51,6 +53,8 @@ Use `:lua vim.pack.update()` to review plugin updates. Write the generated buffe
 - Shared Lua and runtime dependencies load with `:packadd!` semantics in `plugin/00-dependencies.lua`; their plugin scripts are not executed.
 - `lua/plugin_loader.lua` makes `:packadd` plus setup idempotent. It does not implement plugin discovery, dependency resolution, or trigger replay.
 - Native `CmdUndefined` autocommands preserve direct commands for command-driven plugins.
+- Lualine loads when a UI attaches, without loading Noice. Noice loads on the first command-line entry or LSP attachment, along with its Notify backend. Notifications can load Notify independently on first use.
+- Fastaction loads on the first `vim.ui.select()` call and forwards that selection to the configured provider.
 - `vim.pack` has no UI, profiler, background update checker, or automatic build hooks. Use its Lua API for package operations.
 
 ### Adding a plugin

@@ -6,7 +6,10 @@ vim.pack.add({
 	"https://github.com/nvim-lualine/lualine.nvim",
 }, { confirm = false, load = function() end })
 
-local function load_notify()
+local original_notify = vim.notify
+local load_notify = loader.lazy(function()
+	-- Keep loader error reporting from re-entering the notification proxy.
+	vim.notify = original_notify
 	loader.load("nvim-notify", function()
 		require("notify").setup({
 			stages = "static",
@@ -23,9 +26,9 @@ local function load_notify()
 		})
 		vim.notify = require("notify")
 	end)
-end
+end)
 
-local function load_noice()
+local load_noice = loader.lazy(function()
 	load_notify()
 	loader.load("noice.nvim", function()
 		require("noice").setup({
@@ -41,14 +44,53 @@ local function load_noice()
 				lsp_doc_border = true,
 			},
 		})
-		vim.keymap.set("n", "<leader>nd", function()
-			require("noice").cmd("dismiss")
-		end, { desc = "Dismiss notifications" })
 	end)
+end)
+
+vim.notify = function(message, level, opts)
+	if vim.in_fast_event() then
+		vim.schedule(function()
+			vim.notify(message, level, opts)
+		end)
+		return
+	end
+	load_notify()
+	return vim.notify(message, level, opts)
 end
 
+loader.lazy_commands({
+	Notifications = { desc = "Show notification history" },
+	NotificationsClear = { desc = "Clear notification history" },
+}, load_notify)
+
+vim.keymap.set("n", "<leader>nd", function()
+	local config = package.loaded["noice.config"]
+	if config and config.is_running() then
+		require("noice").cmd("dismiss")
+	elseif package.loaded["notify"] then
+		require("notify").dismiss({ pending = true, silent = true })
+	end
+end, { desc = "Dismiss notifications" })
+
+vim.api.nvim_create_autocmd({ "CmdlineEnter", "LspAttach" }, {
+	once = true,
+	callback = load_noice,
+})
+
+vim.api.nvim_create_autocmd("CmdUndefined", {
+	pattern = "Noice*",
+	once = true,
+	callback = function()
+		load_noice()
+		-- Noice registers its commands on the next event-loop turn.
+		vim.wait(1000, function()
+			local config = package.loaded["noice.config"]
+			return config and config.is_running()
+		end, 1)
+	end,
+})
+
 local function load_lualine()
-	load_noice()
 	loader.load("lualine.nvim", function()
 		require("lualine").setup({
 			options = {
@@ -65,8 +107,14 @@ local function load_lualine()
 				lualine_c = { "fileformat" },
 				lualine_x = {
 					{
-						require("noice").api.status.command.get,
-						cond = require("noice").api.status.command.has,
+						function()
+							return package.loaded["noice"].api.status.command.get()
+						end,
+						cond = function()
+							local config = package.loaded["noice.config"]
+							return config and config.is_running() and package.loaded["noice"].api.status.command.has()
+								or false
+						end,
 						color = { fg = vim.g.colors.peach, bg = vim.g.colors.base },
 					},
 				},
@@ -81,4 +129,4 @@ local function load_lualine()
 	end)
 end
 
-vim.schedule(load_lualine)
+vim.api.nvim_create_autocmd("UIEnter", { once = true, callback = load_lualine })
