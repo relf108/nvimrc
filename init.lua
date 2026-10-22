@@ -111,9 +111,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
 -- Start the picker subprocess before loading unrelated plugin configurations.
 if vim.fn.argc(-1) == 0 then
 	vim.g.startup_picker_early = true
+	require("ui.catppuccin")
+	require("ui.nvim-web-devicons")
 	local root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h")
-	for _, name in ipairs({ "catppuccin", "nvim-web-devicons", "fzf-lua" }) do
-		dofile(root .. "/plugin/" .. name .. ".lua")
-	end
+	dofile(root .. "/plugin/fzf-lua.lua")
 	vim.g.startup_picker_early = nil
 end
