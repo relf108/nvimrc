@@ -1,0 +1,697 @@
+diff --git a/lua/fzf-lua/lib/stream.lua b/lua/fzf-lua/lib/stream.lua
+new file mode 100644
+index 0000000..ee20b0d
+--- /dev/null
++++ b/lua/fzf-lua/lib/stream.lua
+@@ -0,0 +1,143 @@
++local uv = vim.uv or vim.loop
++local Queue = require("fzf-lua.lib.queue")
++
++---@class fzf-lua.StreamJob
++---@field data string|string[]
++---@field callback fun(err?: any)
++---@field index integer
++---@field done? boolean
++
++---@class fzf-lua.StreamOptions
++---@field eol string
++---@field transform? fun(line: string): string?
++---@field write fun(data: string, callback: fun(err?: any))
++---@field on_error? fun(err: any)
++---@field budget_ms? number
++
++---@class fzf-lua.lib.stream
++---@field opts fzf-lua.StreamOptions
++---@field queue fzf-lua.lib.queue
++---@field current? fzf-lua.StreamJob
++---@field timer? uv.uv_timer_t
++---@field writing? boolean
++---@field budget number
++---@field stopped boolean
++local M = {}
++M.__index = M
++
++-- One writer belongs to one producer connection. Cancellation invalidates all
++-- deferred work on that connection; a reload creates a separate writer.
++---@param opts fzf-lua.StreamOptions
++---@return fzf-lua.lib.stream
++function M.new(opts)
++  return setmetatable({
++    opts = opts,
++    queue = Queue.new(),
++    budget = (opts.budget_ms or 4) * 1e6,
++    stopped = false,
++  }, M)
++end
++
++---@param job? fzf-lua.StreamJob
++---@param err? any
++local function complete(job, err)
++  if job and not job.done then
++    job.done = true
++    job.callback(err)
++  end
++end
++
++---@param err? any
++function M:cancel(err)
++  if self.stopped then return end
++  self.stopped = true
++  if self.timer and not self.timer:is_closing() then
++    self.timer:stop()
++    self.timer:close()
++  end
++  self.timer = nil
++  local current = self.current
++  self.current = nil
++  complete(current, err or "ECANCELED")
++  while not self.queue:empty() do
++    complete(self.queue:pop(), err or "ECANCELED")
++  end
++end
++
++function M:schedule()
++  if self.stopped or self.timer then return end
++  -- A zero-delay timer yields to input, timers and pipe callbacks, rather than
++  -- continually appending work to the same scheduled-event drain.
++  self.timer = vim.defer_fn(function()
++    self.timer = nil
++    self:step()
++  end, 0)
++end
++
++function M:step()
++  if self.stopped or self.writing then return end
++  self.current = self.current or self.queue:pop()
++  local job = self.current
++  if not job then return end
++
++  local ok, data = pcall(function()
++    if type(job.data) ~= "table" then
++      job.index = 2
++      return tostring(job.data)
++    end
++    if #job.data == 0 then return "" end
++    local output = {}
++    local started = uv.hrtime()
++    repeat
++      local value = job.data[job.index]
++      if self.opts.transform then value = self.opts.transform(value) end
++      if value then output[#output + 1] = value end
++      job.index = job.index + 1
++    until job.index > #job.data or uv.hrtime() - started >= self.budget
++    return #output > 0 and table.concat(output, self.opts.eol) .. self.opts.eol or ""
++  end)
++  if not ok then
++    self:cancel(data)
++    if self.opts.on_error then self.opts.on_error(data) end
++    return
++  end
++
++  local function written(err)
++    self.writing = false
++    if self.stopped then return end
++    if err then
++      self:cancel(err)
++      return
++    end
++    local size = type(job.data) == "table" and #job.data or 1
++    if job.index > size then
++      self.current = nil
++      complete(job)
++      if not self.stopped and not self.queue:empty() then self:schedule() end
++    else
++      self:schedule()
++    end
++  end
++  self.writing = true
++  if data == "" then
++    written()
++  else
++    local success, err = pcall(self.opts.write, data, written)
++    if not success then self:cancel(err) end
++  end
++end
++
++---@param data string|string[]
++---@param callback fun(err?: any)
++function M:write(data, callback)
++  if self.stopped then
++    callback("ECANCELED")
++    return
++  end
++  self.queue:push({ data = data, index = 1, callback = callback })
++  if not self.current and not self.timer and not self.writing then
++    if vim.in_fast_event() then self:schedule() else self:step() end
++  end
++end
++
++return M
+diff --git a/lua/fzf-lua/libuv.lua b/lua/fzf-lua/libuv.lua
+index 8aec734..93da99e 100644
+--- a/lua/fzf-lua/libuv.lua
++++ b/lua/fzf-lua/libuv.lua
+@@ -4,6 +4,7 @@ local uv = vim.uv or vim.loop
+ local _is_win = vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1
+ 
+ local M = {}
++M.cooperative_streaming = true
+ 
+ local base64 = require("fzf-lua.lib.base64")
+ local serpent = require("fzf-lua.lib.serpent")
+@@ -470,6 +471,23 @@ M.spawn = function(opts, fn_transform, fn_done)
+   ---@cast co thread
+   local queue = require("fzf-lua.lib.queue").new()
+   local work_ctx
++  local finished, output_eof, error_eof, queue_done = false, false, false, false
++  local queued_bytes, paused_output, paused_error = 0, false, false
++  local resume_timer
++  local read_cb, err_cb
++  local update_readers
++  local HIGH, LOW = 1024 * 1024, 512 * 1024
++
++  local function wake()
++    if finished or queue_done or resume_timer then return end
++    resume_timer = vim.defer_fn(function()
++      resume_timer = nil
++      if not finished and not queue_done and coroutine.status(co) == "suspended" then
++        local ok, err = coroutine.resume(co)
++        if not ok then error(err) end
++      end
++    end, 0)
++  end
+ 
+   -- Disable queue if running headless due to
+   -- "Attempt to yield across a C-call boundary"
+@@ -480,7 +498,9 @@ M.spawn = function(opts, fn_transform, fn_done)
+   if opts.cb_write_lines then opts.cb_write = opts.cb_write_lines end
+ 
+   local can_finish = function()
+-    if not output_pipe:is_active() -- EOF signalled or process is aborting
++    local input_done = opts.use_queue and (output_eof and queue_done)
++        or (not opts.use_queue and not output_pipe:is_active())
++    if input_done
+         and read_cb_count == 0     -- no outstanding read_cb data processing
+         and write_cb_count == 0    -- no outstanding write callbacks
+     then
+@@ -490,6 +510,13 @@ M.spawn = function(opts, fn_transform, fn_done)
+ 
+   ---@diagnostic disable-next-line: redefined-local
+   local finish = function(code, sig, from, pid)
++    if finished then return end
++    finished = true
++    if resume_timer and not resume_timer:is_closing() then
++      resume_timer:stop()
++      resume_timer:close()
++    end
++    resume_timer = nil
+     -- Uncomment to debug pipe closure timing issues (#1521)
+     -- output_pipe:close(function() print("closed o") end)
+     -- error_pipe:close(function() print("closed e") end)
+@@ -499,7 +526,7 @@ M.spawn = function(opts, fn_transform, fn_done)
+       opts.cb_finish(code, sig, from, pid)
+     end
+     queue:clear()
+-    if not handle:is_closing() then
++    if handle and not handle:is_closing() then
+       handle:kill("sigterm")
+       vim.defer_fn(function()
+         if not handle:is_closing() then
+@@ -508,7 +535,9 @@ M.spawn = function(opts, fn_transform, fn_done)
+       end, 200)
+     end
+     -- NO LONGER USED, was coroutinify callback
+-    if fn_done then fn_done(pid) end
++    if fn_done then
++      if opts.use_queue then vim.schedule(function() fn_done(pid) end) else fn_done(pid) end
++    end
+   end
+ 
+   -- https://github.com/luvit/luv/blob/master/docs.md
+@@ -532,7 +561,7 @@ M.spawn = function(opts, fn_transform, fn_done)
+     env = opts.env,
+     verbatim = _is_win,
+   }, function(code, signal)
+-    if can_finish() or code ~= 0 then
++    if can_finish() or code ~= 0 or signal ~= 0 then
+       -- Do not call `:read_stop` or `:close` here as we may have data
+       -- reads outstanding on slower Windows machines (#1521), only call
+       -- `finish` if all our `uv.write` calls are completed and the pipe
+@@ -546,10 +575,12 @@ M.spawn = function(opts, fn_transform, fn_done)
+   if opts.cb_pid then opts.cb_pid(pid) end
+ 
+   local function write_cb(data)
++    if finished then return end
+     write_cb_count = write_cb_count + 1
+     ---@diagnostic disable-next-line: need-check-nil
+     opts.cb_write(data, function(err)
+       write_cb_count = write_cb_count - 1
++      if finished then return end
+       if err then
+         -- can fail with premature process kill
+         -- assert(not err)
+@@ -559,8 +590,12 @@ M.spawn = function(opts, fn_transform, fn_done)
+         -- pipe due to write_cb_count>0, since this is the last
+         -- call we can close the fzf pipe
+         finish(0, 0, "[write_cb: finish]", pid)
++      elseif opts.use_queue then
++        update_readers()
++        wake()
+       end
+     end)
++    if opts.use_queue and not finished then update_readers() end
+   end
+ 
+   ---@param data string data stream
+@@ -660,26 +695,32 @@ M.spawn = function(opts, fn_transform, fn_done)
+     end
+   end
+ 
+-  local read_cb = function(err, data)
++  read_cb = function(err, data)
++    if finished then return end
+     if err then
+       finish(130, 0, "[read_cb: err]", pid)
+       return
+     end
+     if not data then
++      output_eof = true
+       -- EOF signalled, we can close the pipe
+-      output_pipe:close()
++      if not output_pipe:is_closing() then output_pipe:close() end
+     end
+     if opts.use_queue then
+-      if data then queue:push(data) end
++      if data then
++        queue:push(data)
++        queued_bytes = queued_bytes + #data
++      end
+       -- Either we have outstanding data enqueued or the pipe is closing
+       -- due to the above `output_pipe:close`, in both cases we need to
+       -- resume the dequeue loop
+-      coroutine.resume(co)
++      update_readers()
++      wake()
+     else
+       read_cb_count = read_cb_count + 1
+       local process = function()
+         read_cb_count = read_cb_count - 1
+-        process_data(data)
++        if not finished then process_data(data) end
+       end
+       -- Schedule data processing if we're in fast event
+       -- avoids "attempt to yield across C-call boundary" by using vim.schedule
+@@ -687,11 +728,13 @@ M.spawn = function(opts, fn_transform, fn_done)
+     end
+   end
+ 
+-  local err_cb = function(err, data)
++  err_cb = function(err, data)
++    if finished then return end
+     if err then
+       finish(130, 0, "[err_cb]", pid)
+     end
+     if not data then
++      error_eof = true
+       return
+     end
+     if opts.cb_err then
+@@ -701,6 +744,23 @@ M.spawn = function(opts, fn_transform, fn_done)
+     end
+   end
+ 
++  update_readers = function()
++    if not opts.use_queue or finished then return end
++    if write_cb_count > 0 or queued_bytes >= HIGH then
++      if output_pipe:is_active() then output_pipe:read_stop(); paused_output = true end
++      if error_pipe:is_active() then error_pipe:read_stop(); paused_error = true end
++    elseif queued_bytes <= LOW then
++      if paused_output and not output_eof and not output_pipe:is_closing() then
++        paused_output = false
++        output_pipe:read_start(read_cb)
++      end
++      if paused_error and not error_eof and not error_pipe:is_closing() then
++        paused_error = false
++        error_pipe:read_start(err_cb)
++      end
++    end
++  end
++
+   if not handle then
+     -- uv.spawn failed, error will be in 'pid'
+     -- call once to output the error message
+@@ -713,17 +773,21 @@ M.spawn = function(opts, fn_transform, fn_done)
+   end
+ 
+   if opts.use_queue then
+-    while not (output_pipe:is_closing() and queue:empty()) do
+-      if queue:empty() then
++    while not finished and not (output_eof and queue:empty()) do
++      if queue:empty() or write_cb_count > 0 then
+         coroutine.yield()
+       else
+-        process_data(queue:pop())
++        local data = queue:pop()
++        queued_bytes = queued_bytes - #data
++        process_data(data)
++        update_readers()
+       end
+     end
+     -- process the leftover line from `processs_data`
+     -- will call `finish` immediately if there's no last line
+     -- otherwise, finish is called in the write callback
+-    process_data(nil)
++    queue_done = true
++    if not finished then process_data(nil) end
+   end
+ 
+   return handle, pid
+diff --git a/lua/fzf-lua/shell.lua b/lua/fzf-lua/shell.lua
+index 4740197..a76b40e 100644
+--- a/lua/fzf-lua/shell.lua
++++ b/lua/fzf-lua/shell.lua
+@@ -327,6 +327,7 @@ M.stringify = function(contents, opts, fzf_field_index)
+     local fn_transform = opts.fn_transform
+     local fn_preprocess = opts.fn_preprocess
+     local fn_postprocess = opts.fn_postprocess
++    local stream
+     local co = coroutine.running()
+     ---@cast co thread
+ 
+@@ -338,7 +339,8 @@ M.stringify = function(contents, opts, fzf_field_index)
+     local on_finish = function(_, _, _, _)
+       if not pipe then return end
+       pipe_want_close = true
+-      if write_cb_count == 0 then
++      if stream then stream:cancel() end
++      if pipe and write_cb_count == 0 then
+         -- only close if all our uv.write calls are completed
+         uv.close(pipe)
+         pipe = nil
+@@ -356,6 +358,16 @@ M.stringify = function(contents, opts, fzf_field_index)
+         if cb then cb(nil) end
+       else
+         write_cb_count = write_cb_count + 1
++        if stream then
++          stream:write(data, function(err)
++            write_cb_count = write_cb_count - 1
++            if cb then cb(err) end
++            if err or (write_cb_count == 0 and pipe_want_close) then
++              on_finish(nil, nil, 2)
++            end
++          end)
++          return
++        end
+         if type(data) == "table" then
+           -- cb_write_lines was sent instead of cb_lines
+           if fn_transform then
+@@ -399,6 +411,19 @@ M.stringify = function(contents, opts, fzf_field_index)
+       -- Use queue in libuv.spawn by default
+       opts.use_queue = opts.use_queue == nil and true or opts.use_queue
+ 
++      if opts.use_queue and not _G._fzf_lua_is_headless then
++        stream = require("fzf-lua.lib.stream").new({
++          eol = EOL,
++          transform = type(fn_transform) == "function"
++              and function(line) return fn_transform(line, opts) end or nil,
++          write = function(data, callback)
++            if not pipe or pipe:is_closing() then callback("ECANCELED"); return end
++            uv.write(pipe, data, callback)
++          end,
++          on_error = function(err) utils.error("stream formatting failed: %s", err) end,
++        })
++      end
++
+       -- Throttle pipe writes by default
+       -- opts.throttle = opts.throttle == nil and true or opts.throttle
+ 
+diff --git a/tests/stream_spec.lua b/tests/stream_spec.lua
+new file mode 100644
+index 0000000..6191c3b
+--- /dev/null
++++ b/tests/stream_spec.lua
+@@ -0,0 +1,264 @@
++local helpers = require("fzf-lua.test.helpers")
++local assert = helpers.assert
++local MiniTest = require("mini.test")
++local Stream = require("fzf-lua.lib.stream")
++local libuv = require("fzf-lua.libuv")
++local uv = vim.uv or vim.loop
++
++local function wait(condition)
++  assert.is.True(vim.wait(6000, condition, 1))
++end
++
++local function producer(source)
++  local python = vim.fn.exepath("python3")
++  if python == "" then python = vim.fn.exepath("python") end
++  if python == "" then MiniTest.skip("Python is required for the stream producer") end
++  local file = vim.fn.tempname()
++  vim.fn.writefile(source, file)
++  return libuv.shellescape(python) .. " " .. libuv.shellescape(file), file
++end
++
++describe("Cooperative stream writer", function()
++  it("preserves ordering, filtering, empty batches and raw stderr", function()
++    local output, completed = {}, 0
++    local stream = Stream.new({
++      eol = "\n",
++      transform = function(line)
++        if line == "nil" then return nil end
++        return line ~= "false" and line:upper() or false
++      end,
++      write = function(data, callback)
++        output[#output + 1] = data
++        vim.schedule(function() callback() end)
++      end,
++    })
++    local function done(err)
++      assert.are.equal(nil, err)
++      completed = completed + 1
++    end
++    stream:write({ "a", "nil", "false", "b" }, done)
++    stream:write("raw stderr", done)
++    stream:write({}, done)
++    wait(function() return completed == 3 end)
++    assert.are.equal("A\nB\nraw stderr", table.concat(output))
++  end)
++
++  it("yields to timers between formatting batches", function()
++    local writes, turns, done = 0, 0, false
++    local stream = Stream.new({
++      eol = "\0", budget_ms = 1,
++      transform = function(line) uv.sleep(1); return line end,
++      write = function(_, callback) writes = writes + 1; callback() end,
++    })
++    local timer = _G.assert(uv.new_timer())
++    timer:start(0, 1, function() turns = turns + 1 end)
++    stream:write({ "1", "2", "3", "4", "5", "6" }, function() done = true end)
++    wait(function() return done end)
++    timer:stop()
++    timer:close()
++    assert.is.True(writes > 1 and turns > 1)
++  end)
++
++  it("cancels queued work and acknowledges each job exactly once", function()
++    local acknowledged, callbacks, transformed
++    callbacks, transformed = 0, 0
++    local stream = Stream.new({
++      eol = "\n",
++      transform = function(line) transformed = transformed + 1; return line end,
++      write = function(_, callback) acknowledged = callback end,
++    })
++    local function done(err) assert.is.True(not not err); callbacks = callbacks + 1 end
++    stream:write({ "one" }, done)
++    stream:write({ "two" }, done)
++    stream:cancel()
++    stream:cancel()
++    acknowledged("EPIPE")
++    vim.wait(10)
++    assert.are.equal(2, callbacks)
++    assert.are.equal(1, transformed)
++  end)
++
++  it("serializes fast-event and scheduled writes while a write is pending", function()
++    local callbacks, pending, output = 0, {}, {}
++    local stream = Stream.new({
++      eol = "\n",
++      write = function(data, callback)
++        output[#output + 1] = data
++        pending[#pending + 1] = callback
++      end,
++    })
++    local function done(err) assert.are.equal(nil, err); callbacks = callbacks + 1 end
++    local fast = vim.in_fast_event
++    vim.in_fast_event = function() return true end
++    stream:write({ "one" }, done)
++    vim.in_fast_event = fast
++    stream:write({ "two" }, done)
++    assert.are.equal(0, #output)
++    wait(function() return #output == 1 end)
++    vim.wait(10)
++    assert.are.equal(1, #output)
++    pending[1]()
++    wait(function() return #output == 2 end)
++    pending[2]()
++    assert.are.equal(2, callbacks)
++    assert.are.equal("one\ntwo\n", table.concat(output))
++  end)
++
++  it("reports formatter exceptions and stops the connection", function()
++    local failures, errors = 0, 0
++    local stream = Stream.new({
++      eol = "\n",
++      transform = function() error("bad formatter") end,
++      write = function() error("must not write") end,
++      on_error = function(err)
++        assert.is.True(tostring(err):find("bad formatter", 1, true) ~= nil)
++        errors = errors + 1
++      end,
++    })
++    stream:write({ "one" }, function(err) assert.is.True(not not err); failures = failures + 1 end)
++    assert.are.equal(1, errors)
++    assert.are.equal(1, failures)
++    assert.is.True(stream.stopped)
++  end)
++end)
++
++describe("Queued producer lifecycle", function()
++  it("preserves NUL-delimited input, embedded newlines and UTF-8", function()
++    local command, file = producer({
++      "import sys",
++      "sys.stdout.buffer.write('café\\0with\\nnewline\\0tail'.encode())",
++    })
++    local output, finishes = {}, 0
++    libuv.async_spawn({
++      cmd = command .. " --null", use_queue = true, EOL = "\0",
++      cb_write_lines = function(lines, callback)
++        vim.list_extend(output, lines)
++        vim.schedule(function() callback() end)
++      end,
++      cb_finish = function(code) assert.are.equal(0, code); finishes = finishes + 1 end,
++    }, true)
++    wait(function() return finishes > 0 end)
++    assert.are.same({ "café", "with\nnewline", "tail" }, output)
++    assert.are.equal(1, finishes)
++    os.remove(file)
++  end)
++
++  it("flushes partial lines and CRLF before completing once", function()
++    local command, file = producer({
++      "import sys,time",
++      "sys.stdout.write('part'); sys.stdout.flush(); time.sleep(.01)",
++      "sys.stdout.write('ial\\r\\nlast'); sys.stdout.flush()",
++    })
++    local output, finishes = {}, 0
++    libuv.async_spawn({
++      cmd = command, use_queue = true,
++      cb_write_lines = function(lines, callback)
++        vim.list_extend(output, lines)
++        vim.defer_fn(function() callback() end, 1)
++      end,
++      cb_finish = function(code) assert.are.equal(0, code); finishes = finishes + 1 end,
++    }, true)
++    wait(function() return finishes > 0 end)
++    vim.wait(10)
++    assert.are.same({ "partial", "last" }, output)
++    assert.are.equal(1, finishes)
++    os.remove(file)
++  end)
++
++  it("backpressures a slow consumer without treating a paused pipe as EOF", function()
++    local Queue = require("fzf-lua.lib.queue")
++    local new = Queue.new
++    local peak = 0
++    Queue.new = function()
++      local queue = new()
++      local bytes, push, pop = 0, queue.push, queue.pop
++      queue.push = function(self, data)
++        bytes = bytes + #data
++        peak = math.max(peak, bytes)
++        return push(self, data)
++      end
++      queue.pop = function(self)
++        local data = pop(self)
++        if data then bytes = bytes - #data end
++        return data
++      end
++      return queue
++    end
++    local marker = vim.fn.tempname()
++    local command, file = producer({
++      "import sys,pathlib",
++      "sys.stdout.buffer.write(b'x\\n' * 4194304); sys.stdout.flush()",
++      "pathlib.Path(" .. string.format("%q", marker) .. ").write_text('done')",
++    })
++    local blocked, acknowledged, lines, finishes, pid = true, nil, 0, 0, nil
++    local ok, err = pcall(function()
++      libuv.async_spawn({
++        cmd = command, use_queue = true,
++        cb_pid = function(value) pid = value end,
++        cb_write_lines = function(data, callback)
++          lines = lines + #data
++          if blocked then acknowledged = callback else vim.schedule(function() callback() end) end
++        end,
++        cb_finish = function(code) assert.are.equal(0, code); finishes = finishes + 1 end,
++      }, true)
++      wait(function() return acknowledged ~= nil end)
++      vim.wait(50)
++      assert.are.equal(0, finishes)
++      assert.are.equal(nil, uv.fs_stat(marker))
++      assert.is.True(peak <= 1024 * 1024 + 128 * 1024)
++      blocked = false
++      acknowledged()
++      wait(function() return finishes > 0 end)
++      assert.are.equal(4194304, lines)
++      assert.are.equal(1, finishes)
++    end)
++    Queue.new = new
++    if not ok then libuv.process_kill(pid) end
++    os.remove(file)
++    os.remove(marker)
++    if not ok then error(err) end
++  end)
++
++  it("cancels a paused producer without processing late acknowledgements", function()
++    if vim.fn.has("win32") == 1 then MiniTest.skip("POSIX exec is required for this producer") end
++    local command, file = producer({ "import time", "print('first',flush=True)", "time.sleep(60)" })
++    local pid, acknowledged, finishes, writes = nil, nil, 0, 0
++    libuv.async_spawn({
++      cmd = "exec " .. command, use_queue = true,
++      cb_pid = function(value) pid = value end,
++      cb_write_lines = function(_, callback) writes = writes + 1; acknowledged = callback end,
++      cb_finish = function() finishes = finishes + 1 end,
++    }, true)
++    wait(function() return acknowledged ~= nil end)
++    assert.is.True(libuv.process_kill(pid, "sigterm"))
++    wait(function() return finishes > 0 end)
++    acknowledged()
++    vim.wait(20)
++    assert.are.equal(1, finishes)
++    assert.are.equal(1, writes)
++    os.remove(file)
++  end)
++
++  it("handles a broken consumer pipe and reaps the producer", function()
++    local command, file = producer({
++      "import sys,time",
++      "while True:",
++      " sys.stdout.write('line\\n' * 1024); sys.stdout.flush(); time.sleep(.001)",
++    })
++    local pid, finishes, writes = nil, 0, 0
++    libuv.async_spawn({
++      cmd = command, use_queue = true,
++      cb_pid = function(value) pid = value end,
++      cb_write_lines = function(_, callback)
++        writes = writes + 1
++        vim.schedule(function() callback("EPIPE") end)
++      end,
++      cb_finish = function(code) assert.are.equal(130, code); finishes = finishes + 1 end,
++    }, true)
++    wait(function() return finishes > 0 end)
++    wait(function() return uv.os_getpriority(pid) == nil end)
++    assert.are.equal(1, finishes)
++    assert.are.equal(1, writes)
++    os.remove(file)
++  end)
++end)

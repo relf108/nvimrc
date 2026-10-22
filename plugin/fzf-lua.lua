@@ -9,7 +9,12 @@ vim.pack.add({ "https://github.com/ibhagwan/fzf-lua" }, { confirm = false, load 
 
 local load = loader.lazy(function()
 	loader.load("fzf-lua", function()
-		require("fzf-lua").setup({})
+		local opts = {}
+		-- Fall back to the worker if an update removes the local scheduler patch.
+		if require("fzf-lua.libuv").cooperative_streaming then
+			opts.files = { multiprocess = false }
+		end
+		require("fzf-lua").setup(opts)
 	end)
 end)
 
