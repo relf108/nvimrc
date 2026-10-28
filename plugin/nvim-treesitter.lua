@@ -1,18 +1,9 @@
-local loader = require("plugin_loader")
-
 vim.pack.add({
 	{
 		src = "https://github.com/nvim-treesitter/nvim-treesitter",
 		version = "main",
 	},
 }, { confirm = false, load = true })
-vim.pack.add({ "https://github.com/apple/pkl-neovim" }, { confirm = false, load = function() end })
-
-local load_pkl = loader.lazy_commands({
-	Pkl = { nargs = "+", desc = "Run a pkl command" },
-}, function()
-	loader.load("pkl-neovim")
-end)
 
 local ensure_installed = {
 	"c",
@@ -35,7 +26,6 @@ local ensure_installed = {
 	"cmake",
 	"nix",
 	"requirements",
-	"pkl",
 }
 
 local function start(buf)
@@ -90,10 +80,4 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.api.nvim_create_user_command("TSInstallMissing", install_missing, {
 	desc = "Install missing parsers from the configured Tree-sitter language list",
-})
-
-vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
-	pattern = "*.pkl",
-	once = true,
-	callback = load_pkl,
 })

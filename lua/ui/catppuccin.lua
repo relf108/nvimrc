@@ -42,7 +42,18 @@ require("catppuccin").setup({
 		operators = {},
 	},
 	color_overrides = {},
-	custom_highlights = {},
+	custom_highlights = function(colors)
+		return {
+			YankHighlight = { fg = colors.base, bg = colors.yellow },
+		}
+	end,
+	highlight_overrides = {
+		latte = function(colors)
+			return {
+				YankHighlight = { fg = colors.base, bg = colors.text },
+			}
+		end,
+	},
 	integrations = {
 		blink_cmp = true,
 		treesitter = true,
